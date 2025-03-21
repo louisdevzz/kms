@@ -4,6 +4,7 @@ import {
   IconBug,
   IconChecklist,
   IconError404,
+  IconFile,
   IconHelp,
   IconLayoutDashboard,
   IconLock,
@@ -60,11 +61,11 @@ export const sidebarData: SidebarData = {
           url: '/upload',
           icon: IconUpload,
         },
-        // {
-        //   title: 'Apps',
-        //   url: '/apps',
-        //   icon: IconPackages,
-        // },
+        {
+          title: 'Documents',
+          url: '/documents',
+          icon: IconFile,
+        },
         // {
         //   title: 'Chats',
         //   url: '/chats',

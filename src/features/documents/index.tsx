@@ -3,6 +3,8 @@ import {
   IconAdjustmentsHorizontal,
   IconSortAscendingLetters,
   IconSortDescendingLetters,
+  IconFileText,
+  IconEye,
 } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,33 +21,79 @@ import { Main } from '@/components/layout/main'
 import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
-import { apps } from './data/apps'
+import { PDFViewerDialog } from '@/components/pdf-viewer-dialog'
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 
-const appText = new Map<string, string>([
-  ['all', 'All Apps'],
-  ['connected', 'Connected'],
-  ['notConnected', 'Not Connected'],
-])
+const DocumentCard = ({ document }: { document: any }) => {
+  const [isViewerOpen, setIsViewerOpen] = useState(false)
+  const handleView = async () => {
+    try {
+      // console.log('document', document)
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/knowledge/documents/download?document_name=${document.name}`,
+        { responseType: 'blob' }
+      )
+      const url = URL.createObjectURL(response.data)
+      // console.log('url', url)
+      setDocumentUrl(url)
+      setIsViewerOpen(true)
+    } catch (error) {
+      console.error('Error fetching document:', error)
+    }
+  }
+
+  const [documentUrl, setDocumentUrl] = useState<string>('')
+
+  return (
+    <>
+      <div className="rounded-lg border p-4 hover:shadow-md">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-muted p-2">
+            <IconFileText className="h-5 w-5" />
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleView}
+            className="flex items-center gap-2"
+          >
+            <IconEye className="h-4 w-4" />
+            View
+          </Button>
+        </div>
+        <div>
+          <h2 className="mb-1 font-semibold">{document.name}</h2>
+          <p className="line-clamp-2 text-gray-500">{document.description || 'No description available'}</p>
+        </div>
+      </div>
+
+      <PDFViewerDialog
+        open={isViewerOpen}
+        onOpenChange={setIsViewerOpen}
+        documentUrl={documentUrl}
+        title={document.name}
+      />
+    </>
+  )
+}
 
 export default function Apps() {
   const [sort, setSort] = useState('ascending')
-  const [appType, setAppType] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
 
-  const filteredApps = apps
-    .sort((a, b) =>
-      sort === 'ascending'
-        ? a.name.localeCompare(b.name)
-        : b.name.localeCompare(a.name)
-    )
-    .filter((app) =>
-      appType === 'connected'
-        ? app.connected
-        : appType === 'notConnected'
-          ? !app.connected
-          : true
-    )
-    .filter((app) => app.name.toLowerCase().includes(searchTerm.toLowerCase()))
+  const fetchDocuments = async () => {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/knowledge/documents/user?user=aaaaaaaaaaaaaa`)
+    return response.data
+  }
+
+  const { data: documents } = useQuery({
+    queryKey: ['documents'],
+    queryFn: () => fetchDocuments(),
+  })
+
+  // console.log(documents)
+
 
   return (
     <>
@@ -62,10 +110,10 @@ export default function Apps() {
       <Main fixed>
         <div>
           <h1 className='text-2xl font-bold tracking-tight'>
-            App Integrations
+            Documents
           </h1>
           <p className='text-muted-foreground'>
-            Here&apos;s a list of your apps for the integration!
+            Here&apos;s a list of your documents!
           </p>
         </div>
         <div className='my-4 flex items-end justify-between sm:my-0 sm:items-center'>
@@ -76,16 +124,7 @@ export default function Apps() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Select value={appType} onValueChange={setAppType}>
-              <SelectTrigger className='w-36'>
-                <SelectValue>{appText.get(appType)}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='all'>All Apps</SelectItem>
-                <SelectItem value='connected'>Connected</SelectItem>
-                <SelectItem value='notConnected'>Not Connected</SelectItem>
-              </SelectContent>
-            </Select>
+
           </div>
 
           <Select value={sort} onValueChange={setSort}>
@@ -112,30 +151,8 @@ export default function Apps() {
         </div>
         <Separator className='shadow' />
         <ul className='faded-bottom no-scrollbar grid gap-4 overflow-auto pb-16 pt-4 md:grid-cols-2 lg:grid-cols-3'>
-          {filteredApps.map((app) => (
-            <li
-              key={app.name}
-              className='rounded-lg border p-4 hover:shadow-md'
-            >
-              <div className='mb-8 flex items-center justify-between'>
-                <div
-                  className={`flex size-10 items-center justify-center rounded-lg bg-muted p-2`}
-                >
-                  {app.logo}
-                </div>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  className={`${app.connected ? 'border border-blue-300 bg-blue-50 hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-950 dark:hover:bg-blue-900' : ''}`}
-                >
-                  {app.connected ? 'Connected' : 'Connect'}
-                </Button>
-              </div>
-              <div>
-                <h2 className='mb-1 font-semibold'>{app.name}</h2>
-                <p className='line-clamp-2 text-gray-500'>{app.desc}</p>
-              </div>
-            </li>
+          {documents?.user?.map((app: any,index: number) => (
+            <DocumentCard key={index} document={app} />
           ))}
         </ul>
       </Main>

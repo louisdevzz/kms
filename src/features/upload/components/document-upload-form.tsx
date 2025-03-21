@@ -26,7 +26,6 @@ import { Badge } from '@/components/ui/badge'
 import { X } from 'lucide-react'
 
 const categories: { label: string; value: Category }[] = [
-  { label: 'Thông tin trường đại học', value: 'thong_tin_truong_dai_hoc' },
   { label: 'Thông tin khoa công nghệ thông tin', value: 'thong_tin_khoa_cong_nghe_thong_tin' },
   { label: 'Thông tin khoa ngôn ngữ', value: 'thong_tin_khoa_ngon_ngu' },
   { label: 'Thông tin khoa kinh tế', value: 'thong_tin_khoa_kinh_te' },
