@@ -2,9 +2,10 @@ import { HTMLAttributes, useState } from 'react'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from '@tanstack/react-router'
-import { IconBrandFacebook, IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { IconBrandGoogle } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
+import { setAuth } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -36,6 +37,7 @@ const formSchema = z.object({
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -47,12 +49,21 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
+    
+    // Simulate authentication success
+    const fakeAuthData = {
+      user: {
+        email: data.email,
+        id: '123',
+      },
+      token: 'fake-jwt-token',
+    }
 
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
+    // Save to localStorage with expiration
+    setAuth(fakeAuthData)
+
+    // Navigate to home page after successful login
+    navigate({ to: '/' })
   }
 
   return (

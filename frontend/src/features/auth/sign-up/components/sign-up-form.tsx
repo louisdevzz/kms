@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
+import { useNavigate } from '@tanstack/react-router'
 
 type SignUpFormProps = HTMLAttributes<HTMLDivElement>
 
@@ -41,7 +42,7 @@ const formSchema = z
 
 export function SignUpForm({ className, ...props }: SignUpFormProps) {
   const [isLoading, setIsLoading] = useState(false)
-
+  const navigate = useNavigate()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -56,9 +57,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
     // eslint-disable-next-line no-console
     console.log(data)
 
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
+    navigate({ to: '/' })
   }
 
   return (
