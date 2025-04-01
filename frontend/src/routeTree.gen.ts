@@ -49,9 +49,6 @@ const AuthenticatedHelpCenterIndexLazyImport = createFileRoute(
 const AuthenticatedDocumentsIndexLazyImport = createFileRoute(
   '/_authenticated/documents/',
 )()
-const AuthenticatedChatsIndexLazyImport = createFileRoute(
-  '/_authenticated/chats/',
-)()
 const AuthenticatedSettingsNotificationsLazyImport = createFileRoute(
   '/_authenticated/settings/notifications',
 )()
@@ -216,15 +213,6 @@ const AuthenticatedDocumentsIndexLazyRoute =
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any).lazy(() =>
     import('./routes/_authenticated/documents/index.lazy').then((d) => d.Route),
-  )
-
-const AuthenticatedChatsIndexLazyRoute =
-  AuthenticatedChatsIndexLazyImport.update({
-    id: '/chats/',
-    path: '/chats/',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any).lazy(() =>
-    import('./routes/_authenticated/chats/index.lazy').then((d) => d.Route),
   )
 
 const AuthenticatedSettingsNotificationsLazyRoute =
@@ -401,13 +389,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsNotificationsLazyImport
       parentRoute: typeof AuthenticatedSettingsRouteLazyImport
     }
-    '/_authenticated/chats/': {
-      id: '/_authenticated/chats/'
-      path: '/chats'
-      fullPath: '/chats'
-      preLoaderRoute: typeof AuthenticatedChatsIndexLazyImport
-      parentRoute: typeof AuthenticatedRouteImport
-    }
     '/_authenticated/documents/': {
       id: '/_authenticated/documents/'
       path: '/documents'
@@ -477,7 +458,6 @@ const AuthenticatedSettingsRouteLazyRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteLazyRoute: typeof AuthenticatedSettingsRouteLazyRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedChatsIndexLazyRoute: typeof AuthenticatedChatsIndexLazyRoute
   AuthenticatedDocumentsIndexLazyRoute: typeof AuthenticatedDocumentsIndexLazyRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
   AuthenticatedUploadIndexLazyRoute: typeof AuthenticatedUploadIndexLazyRoute
@@ -488,7 +468,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteLazyRoute:
     AuthenticatedSettingsRouteLazyRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedChatsIndexLazyRoute: AuthenticatedChatsIndexLazyRoute,
   AuthenticatedDocumentsIndexLazyRoute: AuthenticatedDocumentsIndexLazyRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
   AuthenticatedUploadIndexLazyRoute: AuthenticatedUploadIndexLazyRoute,
@@ -516,7 +495,6 @@ export interface FileRoutesByFullPath {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
-  '/chats': typeof AuthenticatedChatsIndexLazyRoute
   '/documents': typeof AuthenticatedDocumentsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/settings/': typeof AuthenticatedSettingsIndexLazyRoute
@@ -540,7 +518,6 @@ export interface FileRoutesByTo {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
-  '/chats': typeof AuthenticatedChatsIndexLazyRoute
   '/documents': typeof AuthenticatedDocumentsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/settings': typeof AuthenticatedSettingsIndexLazyRoute
@@ -568,7 +545,6 @@ export interface FileRoutesById {
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
-  '/_authenticated/chats/': typeof AuthenticatedChatsIndexLazyRoute
   '/_authenticated/documents/': typeof AuthenticatedDocumentsIndexLazyRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexLazyRoute
@@ -596,7 +572,6 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
-    | '/chats'
     | '/documents'
     | '/help-center'
     | '/settings/'
@@ -619,7 +594,6 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
-    | '/chats'
     | '/documents'
     | '/help-center'
     | '/settings'
@@ -645,7 +619,6 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
     | '/_authenticated/settings/notifications'
-    | '/_authenticated/chats/'
     | '/_authenticated/documents/'
     | '/_authenticated/help-center/'
     | '/_authenticated/settings/'
@@ -713,7 +686,6 @@ export const routeTree = rootRoute
       "children": [
         "/_authenticated/settings",
         "/_authenticated/",
-        "/_authenticated/chats/",
         "/_authenticated/documents/",
         "/_authenticated/help-center/",
         "/_authenticated/upload/",
@@ -783,10 +755,6 @@ export const routeTree = rootRoute
     "/_authenticated/settings/notifications": {
       "filePath": "_authenticated/settings/notifications.lazy.tsx",
       "parent": "/_authenticated/settings"
-    },
-    "/_authenticated/chats/": {
-      "filePath": "_authenticated/chats/index.lazy.tsx",
-      "parent": "/_authenticated"
     },
     "/_authenticated/documents/": {
       "filePath": "_authenticated/documents/index.lazy.tsx",

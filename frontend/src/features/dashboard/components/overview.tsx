@@ -3,51 +3,51 @@ import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 const data = [
   {
     name: 'Jan',
-    total: Math.floor(Math.random() * 5000) + 1000,
+    uploads: 234,
   },
   {
     name: 'Feb',
-    total: Math.floor(Math.random() * 5000) + 1000,
+    uploads: 278,
   },
   {
     name: 'Mar',
-    total: Math.floor(Math.random() * 5000) + 1000,
+    uploads: 312,
   },
   {
     name: 'Apr',
-    total: Math.floor(Math.random() * 5000) + 1000,
+    uploads: 289,
   },
   {
     name: 'May',
-    total: Math.floor(Math.random() * 5000) + 1000,
+    uploads: 456,
   },
   {
     name: 'Jun',
-    total: Math.floor(Math.random() * 5000) + 1000,
+    uploads: 387,
   },
   {
     name: 'Jul',
-    total: Math.floor(Math.random() * 5000) + 1000,
+    uploads: 356,
   },
   {
     name: 'Aug',
-    total: Math.floor(Math.random() * 5000) + 1000,
+    uploads: 290,
   },
   {
     name: 'Sep',
-    total: Math.floor(Math.random() * 5000) + 1000,
+    uploads: 345,
   },
   {
     name: 'Oct',
-    total: Math.floor(Math.random() * 5000) + 1000,
+    uploads: 478,
   },
   {
     name: 'Nov',
-    total: Math.floor(Math.random() * 5000) + 1000,
+    uploads: 389,
   },
   {
     name: 'Dec',
-    total: Math.floor(Math.random() * 5000) + 1000,
+    uploads: 425,
   },
 ]
 
@@ -67,10 +67,10 @@ export function Overview() {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => `$${value}`}
+          tickFormatter={(value) => `${value}`}
         />
         <Bar
-          dataKey='total'
+          dataKey='uploads'
           fill='currentColor'
           radius={[4, 4, 0, 0]}
           className='fill-primary'
