@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 from pymongo import MongoClient
 from bson import ObjectId
-from activitylog import ActivityLog
+from backend.dao.activitylog_module.activitylog import ActivityLog
 
 
 class IActivityLogDAO(ABC):

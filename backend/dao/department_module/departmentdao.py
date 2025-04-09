@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 from pymongo import MongoClient
 from bson import ObjectId
-from department import Department
+from backend.dao.department_module.department import Department
 
 
 class IDepartmentDAO(ABC):

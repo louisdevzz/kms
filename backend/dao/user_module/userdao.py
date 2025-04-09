@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from user import User
+from backend.dao.user_module.user import User
 from pymongo import MongoClient
 from bson import ObjectId
 from typing import List, Optional

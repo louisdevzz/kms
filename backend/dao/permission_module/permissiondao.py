@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 from pymongo import MongoClient
 from bson import ObjectId
-from permission import Permission
+from backend.dao.permission_module.permission import Permission
 
 
 class IPermissionDAO(ABC):

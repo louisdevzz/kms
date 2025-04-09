@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 from pymongo import MongoClient
 from bson import ObjectId
-from document import Document, Version
+from backend.dao.document_module.document import Document, Version
 
 
 class IDocumentDAO(ABC):

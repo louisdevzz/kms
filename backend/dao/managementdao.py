@@ -1,19 +1,19 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, BinaryIO
 from pymongo import MongoClient
-from dao.user_module.user import User
-from dao.user_module.userdao import UserDAO
-from dao.document_module.document import Document, Version
-from dao.document_module.documentdao import DocumentDAO
-from dao.department_module.department import Department
-from dao.department_module.departmentdao import DepartmentDAO
-from dao.activitylog_module.activitylog import ActivityLog
-from dao.activitylog_module.activitylogdao import ActivityLogDAO
-from dao.permission_module.permission import Permission
-from dao.permission_module.permissiondao import PermissionDAO
-from dao.minio_module.storage import MinIOStorage
+from backend.dao.user_module.user import User
+from backend.dao.user_module.userdao import UserDAO
+from backend.dao.document_module.document import Document, Version
+from backend.dao.document_module.documentdao import DocumentDAO
+from backend.dao.department_module.department import Department
+from backend.dao.department_module.departmentdao import DepartmentDAO
+from backend.dao.activitylog_module.activitylog import ActivityLog
+from backend.dao.activitylog_module.activitylogdao import ActivityLogDAO
+from backend.dao.permission_module.permission import Permission
+from backend.dao.permission_module.permissiondao import PermissionDAO
+from backend.dao.minio_module.storage import MinIOStorage
 from datetime import timedelta
-from utils.config_loader import get_storage_config, get_collections, get_db_config
+from backend.utils.config_loader import get_storage_config, get_collections, get_db_config
 
 
 class IManagementDAO(ABC):
