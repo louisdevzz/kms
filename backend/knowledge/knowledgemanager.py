@@ -6,7 +6,7 @@ from backend.knowledge.permissionmanager import PermissionManager
 from backend.dao.managementdao import ManagementDAO, User, Document, Version
 
 
-class IKnowledgeManager:
+class IKnowledgeManager(ABC):
 
     # Authentication methods
     @abstractmethod
