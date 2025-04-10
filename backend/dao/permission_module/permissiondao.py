@@ -1,32 +1,9 @@
-from abc import ABC, abstractmethod
 from typing import List, Optional
 from pymongo import MongoClient
 from bson import ObjectId
+
+from backend.dao.permission_module.daointerface import IPermissionDAO
 from backend.dao.permission_module.permission import Permission
-
-
-class IPermissionDAO(ABC):
-    @abstractmethod
-    def save(self, permission: Permission) -> bool: pass
-
-    @abstractmethod
-    def findByUser(self, userId: str) -> List[Permission]: pass
-
-    @abstractmethod
-    def findByDoc(self, docId: str) -> List[Permission]: pass
-
-    @abstractmethod
-    def findByUserDoc(self, userId: str, docId: str) -> Optional[Permission]: pass
-
-    @abstractmethod
-    def findAll(self) -> List[Permission]: pass
-
-    @abstractmethod
-    def update(self, permission: Permission) -> bool: pass
-
-    @abstractmethod
-    def delete(self, permissionId: str) -> bool: pass
-
 
 class PermissionDAO(IPermissionDAO):
     def __init__(self, mongo_client: MongoClient, database_name: str, collection_name: str):

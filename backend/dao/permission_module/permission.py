@@ -1,16 +1,7 @@
-from abc import ABC, abstractmethod
 from pydantic import BaseModel, Field
 from bson import ObjectId
 from typing import List
-
-
-class IPermission(ABC):
-    @abstractmethod
-    def to_json(self) -> str: pass
-
-    @abstractmethod
-    def remove_permissions(self, permissions_to_remove: List[str]) -> bool: pass
-
+from backend.dao.permission_module.interface import IPermission
 
 class Permission(BaseModel, IPermission):
     permissionId: str = Field(..., description="Unique identifier for the permission_module")
