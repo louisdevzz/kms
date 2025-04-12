@@ -5,14 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4ebf400d-a308-4379-9635-055f851904c5" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/backend/dao/department_module/department.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/dao/department_module/department.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/dao/department_module/departmentdao.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/dao/department_module/departmentdao.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/dao/department_module/interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/dao/department_module/interface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/dao/document_module/daointerface.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/dao/document_module/daointerface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/dao/document_module/document.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/dao/document_module/document.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/dao/document_module/documentdao.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/dao/document_module/documentdao.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/dao/document_module/interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/dao/document_module/interface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/dao/user_module/interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/dao/user_module/interface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +46,7 @@
     "Python.documentmanager.executor": "Run",
     "Python.hasher.executor": "Run",
     "Python.knowledgemanager.executor": "Run",
+    "Python.management_dao.executor": "Run",
     "Python.managementdao.executor": "Run",
     "Python.permissiondao.executor": "Run",
     "Python.permissionmanager.executor": "Run",
@@ -70,6 +65,9 @@
       <recent name="$PROJECT_DIR$/backend/api" />
       <recent name="$PROJECT_DIR$/backend/knowledge" />
       <recent name="$PROJECT_DIR$/backend" />
+      <recent name="$PROJECT_DIR$/backend/dao" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/backend/dao" />
     </key>
   </component>

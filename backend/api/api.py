@@ -1,6 +1,6 @@
 from backend.utils.config_loader import get_secret_key
 from typing import Optional, List
-from backend.knowledge.knowledgemanager import KnowledgeManager
+from backend.knowledge.knowledge_manager import KnowledgeManager
 from backend.dao.management_dao import ManagementDAO
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Depends, status, APIRouter, Form, UploadFile, File, Body
