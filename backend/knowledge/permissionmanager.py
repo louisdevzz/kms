@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
-from backend.dao.managementdao import ManagementDAO
+from backend.dao.management_dao import ManagementDAO
 
 
 class IPermissionManager(ABC):

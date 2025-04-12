@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 from backend.dao.document_module.document import Document, Version
 
+
 class IDocumentDAO(ABC):
     @abstractmethod
     def save(self, document: Document) -> bool: pass

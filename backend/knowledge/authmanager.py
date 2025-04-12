@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List, Dict
-from backend.dao.managementdao import User
-from backend.dao.managementdao import ManagementDAO
+from backend.dao.management_dao import User
+from backend.dao.management_dao import ManagementDAO
 from backend.utils.hasher import PasswordHasher
 
 

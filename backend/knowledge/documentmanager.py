@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, BinaryIO
-from backend.dao.managementdao import Document, Version
-from backend.dao.managementdao import ManagementDAO
+from backend.dao.management_dao import Document, Version
+from backend.dao.management_dao import ManagementDAO
 from backend.knowledge.permissionmanager import PermissionManager
 
 

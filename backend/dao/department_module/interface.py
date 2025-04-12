@@ -1,6 +1,4 @@
 from abc import ABC, abstractmethod
-from pydantic import BaseModel, Field
-from bson import ObjectId
 
 
 class IDepartment(ABC):

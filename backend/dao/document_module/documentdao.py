@@ -1,9 +1,9 @@
-from abc import ABC, abstractmethod
 from typing import List, Optional
 from pymongo import MongoClient
 from bson import ObjectId
 from backend.dao.document_module.daointerface import IDocumentDAO
 from backend.dao.document_module.document import Document, Version
+
 
 class DocumentDAO(IDocumentDAO):
     def __init__(self, mongo_client: MongoClient, database_name: str, collection: str):

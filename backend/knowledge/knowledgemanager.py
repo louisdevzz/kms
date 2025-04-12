@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, BinaryIO
 from backend.knowledge.authmanager import AuthManager
 from backend.knowledge.documentmanager import DocumentManager
 from backend.knowledge.permissionmanager import PermissionManager
-from backend.dao.managementdao import ManagementDAO, User, Document, Version
+from backend.dao.management_dao import ManagementDAO, User, Document, Version
 
 
 class IKnowledgeManager(ABC):

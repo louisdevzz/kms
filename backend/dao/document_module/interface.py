@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class IDocument(ABC):
     @abstractmethod
     def to_json(self) -> str: pass
