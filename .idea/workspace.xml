@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4ebf400d-a308-4379-9635-055f851904c5" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/backend/api/iapi_router.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/api.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/api/api_router.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/app.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,6 +40,8 @@
   "keyToString": {
     "Python.activitylogdao.executor": "Run",
     "Python.api.executor": "Run",
+    "Python.api_router.executor": "Run",
+    "Python.app.executor": "Run",
     "Python.authmanager.executor": "Run",
     "Python.config_loader.executor": "Run",
     "Python.daointerface.executor": "Run",
@@ -45,6 +49,8 @@
     "Python.documentdao.executor": "Run",
     "Python.documentmanager.executor": "Run",
     "Python.hasher.executor": "Run",
+    "Python.iapi_router.executor": "Run",
+    "Python.iknowledge_manager.executor": "Run",
     "Python.knowledgemanager.executor": "Run",
     "Python.management_dao.executor": "Run",
     "Python.managementdao.executor": "Run",
@@ -68,6 +74,9 @@
       <recent name="$PROJECT_DIR$/backend/dao" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/backend/knowledge/permission" />
+      <recent name="$PROJECT_DIR$/backend/knowledge/document" />
+      <recent name="$PROJECT_DIR$/backend/knowledge/auth" />
       <recent name="$PROJECT_DIR$/backend/dao" />
     </key>
   </component>
