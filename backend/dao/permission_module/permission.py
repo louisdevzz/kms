@@ -1,7 +1,8 @@
 from pydantic import BaseModel, Field
 from bson import ObjectId
 from typing import List
-from backend.dao.permission_module.interface import IPermission
+from backend.dao.permission_module.ipermission import IPermission
+
 
 class Permission(BaseModel, IPermission):
     permissionId: str = Field(..., description="Unique identifier for the permission_module")

@@ -1,7 +1,6 @@
 from typing import Optional, List, Dict
-from backend.dao.management_dao import User
-from backend.dao.management_dao import ManagementDAO
-from backend.utils.hasher import PasswordHasher
+from backend.dao.management_dao import User, ManagementDAO
+from backend.utils.hasher import get_password_hash, verify_password
 from backend.knowledge.auth.iauth_manager import IAuthManager
 
 
@@ -16,18 +15,18 @@ class AuthManager(IAuthManager):
             return False
 
     def create_new_user(self, email: str, password: str, name: str, department_id: str,
-                        roles: List[Dict[str, str]]) -> bool:
+                        roles: List[str]) -> bool:
         if self.check_existing_user(email):
             return False
 
         # Hash the password
-        hashed_password = PasswordHasher.get_password_hash(password)
+        hashed_password = get_password_hash(password=password)
 
         new_user = User(
             name=name,
             email=email,
-            hashed_password=hashed_password,
-            department_id=department_id,
+            password=hashed_password,
+            departmentId=department_id,
             roles=roles
         )
 
@@ -43,7 +42,7 @@ class AuthManager(IAuthManager):
         except ValueError:
             return False
 
-        return PasswordHasher.verify_password(password, hashed)
+        return verify_password(password, hashed)
 
     def get_user_information(self, user_id: str) -> Optional[User]:
         try:

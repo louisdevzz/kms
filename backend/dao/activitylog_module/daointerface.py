@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 from backend.dao.activitylog_module.activitylog import ActivityLog
 
+
 class IActivityLogDAO(ABC):
     @abstractmethod
     def save(self, log: ActivityLog) -> bool: pass

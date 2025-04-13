@@ -1,16 +1,16 @@
 from pydantic import BaseModel, Field
 from bson import ObjectId
 from typing import List, Dict, Optional
-from backend.dao.user_module.interface import IUser
+from backend.dao.user_module.iuser import IUser
 
 
 class User(BaseModel, IUser):
-    userId: str = Field(..., description="Unique identifier")
+    userId: str = Field(default_factory=lambda: str(ObjectId()), description="Unique identifier")  # Auto-generated
     name: str = Field(..., description="Name of user_module")
     email: str = Field(..., description="Email of user_module")
     password: str = Field(..., description="Password hash")
     departmentId: str = Field(..., description="Department ID (single department_module)")
-    roles: List[Dict[str, str]] = Field(
+    roles: List[str] = Field(
         default_factory=list,
         description="List of roles with name and description"
     )
@@ -21,13 +21,11 @@ class User(BaseModel, IUser):
             email: str,
             password: str,
             departmentId: str,
-            roles: Optional[List[Dict[str, str]]] = None,
+            roles: Optional[List[str]] = None,
             **kwargs
     ):
         roles = roles or []
-
         super().__init__(
-            userId=str(ObjectId()),
             name=name,
             email=email,
             password=password,
@@ -63,7 +61,7 @@ class User(BaseModel, IUser):
         return False
 
     # role methods
-    def get_roles(self) -> List[Dict[str, str]]:
+    def get_roles(self) -> List[str]:
         return self.roles
 
     def add_role(self, role_name: str, role_description: str = "") -> bool:

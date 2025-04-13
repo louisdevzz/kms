@@ -1,7 +1,7 @@
 from typing import List, Optional
 from pymongo import MongoClient
 from bson import ObjectId
-from backend.dao.document_module.daointerface import IDocumentDAO
+from backend.dao.document_module.idocument_dao import IDocumentDAO
 from backend.dao.document_module.document import Document, Version
 
 

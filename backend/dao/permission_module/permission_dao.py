@@ -1,9 +1,9 @@
 from typing import List, Optional
 from pymongo import MongoClient
 from bson import ObjectId
-
-from backend.dao.permission_module.daointerface import IPermissionDAO
+from backend.dao.permission_module.ipermission_dao import IPermissionDAO
 from backend.dao.permission_module.permission import Permission
+
 
 class PermissionDAO(IPermissionDAO):
     def __init__(self, mongo_client: MongoClient, database_name: str, collection_name: str):

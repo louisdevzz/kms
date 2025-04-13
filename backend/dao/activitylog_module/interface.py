@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 
+
 class IActivityLog(ABC):
     @abstractmethod
     def to_json(self) -> str: pass

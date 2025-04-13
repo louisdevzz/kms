@@ -1,7 +1,7 @@
 from typing import List, Optional
 from pymongo import MongoClient
 from bson import ObjectId
-from backend.dao.department_module.daointerface import IDepartmentDAO
+from backend.dao.department_module.idepartment_dao import IDepartmentDAO
 from backend.dao.department_module.department import Department
 
 

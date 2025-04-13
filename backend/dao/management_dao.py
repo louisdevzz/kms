@@ -1,15 +1,15 @@
 from typing import List, Optional, BinaryIO
 from pymongo import MongoClient
 from backend.dao.user_module.user import User
-from backend.dao.user_module.userdao import UserDAO
+from backend.dao.user_module.user_dao import UserDAO
 from backend.dao.document_module.document import Document, Version
-from backend.dao.document_module.documentdao import DocumentDAO
+from backend.dao.document_module.document_dao import DocumentDAO
 from backend.dao.department_module.department import Department
-from backend.dao.department_module.departmentdao import DepartmentDAO
+from backend.dao.department_module.department_dao import DepartmentDAO
 from backend.dao.activitylog_module.activitylog import ActivityLog
 from backend.dao.activitylog_module.activitylogdao import ActivityLogDAO
 from backend.dao.permission_module.permission import Permission
-from backend.dao.permission_module.permissiondao import PermissionDAO
+from backend.dao.permission_module.permission_dao import PermissionDAO
 from backend.dao.minio_module.storage import MinIOStorage
 from datetime import timedelta
 from backend.utils.config_loader import get_storage_config, get_collections, get_db_config

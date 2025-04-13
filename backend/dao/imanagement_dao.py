@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional, BinaryIO
-from datetime import timedelta
 from backend.dao.user_module.user import User
 from backend.dao.document_module.document import Document, Version
 from backend.dao.department_module.department import Department

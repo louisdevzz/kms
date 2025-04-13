@@ -104,7 +104,6 @@ class KMS_APIRouter(IAPIRouter):
         return {
             "message": "login successfully",
             "access_token": token,
-            "token_type": "bearer"
         }
 
     # upload document

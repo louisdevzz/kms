@@ -1,8 +1,9 @@
-from backend.dao.user_module.daointerface import IUserDAO
+from backend.dao.user_module.iuser_dao import IUserDAO
 from backend.dao.user_module.user import User
 from pymongo import MongoClient
 from bson import ObjectId
 from typing import List, Optional
+
 
 class UserDAO(IUserDAO):
     def __init__(self, mongo_client: MongoClient, database_name: str, collection: str):

@@ -4,6 +4,7 @@ from bson import ObjectId
 from backend.dao.activitylog_module.activitylog import ActivityLog
 from backend.dao.activitylog_module.daointerface import IActivityLogDAO
 
+
 class ActivityLogDAO(IActivityLogDAO):
     def __init__(self, mongo_client: MongoClient, database_name: str, collection_name: str):
         self.db = mongo_client[database_name]

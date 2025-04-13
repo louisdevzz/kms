@@ -9,7 +9,7 @@ class IAuthManager(ABC):
 
     @abstractmethod
     def create_new_user(self, email: str, password: str, name: str, department_id: str,
-                        roles: List[Dict[str, str]]) -> bool: pass
+                        roles: List[str]) -> bool: pass
 
     @abstractmethod
     def check_password(self, email: str, password: str) -> bool: pass
