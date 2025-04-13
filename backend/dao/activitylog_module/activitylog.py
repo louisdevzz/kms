@@ -1,11 +1,11 @@
 from pydantic import BaseModel, Field
 from bson import ObjectId
 from datetime import datetime
-from backend.dao.activitylog_module.interface import IActivityLog
+from backend.dao.activitylog_module.iactivitylog import IActivityLog
 
 
 class ActivityLog(BaseModel, IActivityLog):
-    activityLogId: str = Field(..., description="Unique identifier for the log")
+    activityLogId: str = Field(default_factory=lambda: str(ObjectId()), description="Unique identifier")  # Auto-generated
     userId: str = Field(..., description="ID of the user_module who performed the action")
     docId: str = Field(..., description="ID of the document_module involved")
     action: str = Field(..., description="Type of action performed")
@@ -21,7 +21,6 @@ class ActivityLog(BaseModel, IActivityLog):
             **kwargs
     ):
         super().__init__(
-            activityLogId=str(ObjectId()),
             userId=userId,
             docId=docId,
             action=action,
