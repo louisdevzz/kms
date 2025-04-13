@@ -9,7 +9,7 @@ class Version(BaseModel):
     version_number: int = Field(..., description="The version number of the document")
     modified_by: str = Field(..., description="User ID who modified this version")
     modification_date: datetime = Field(..., description="Date and time of modification")
-    size: int = Field(..., description="Size of the file in bytes")
+    file_size: int = Field(..., description="Size of the file in bytes")
 
 
 class Document(BaseModel, IDocument):
@@ -45,7 +45,7 @@ class Document(BaseModel, IDocument):
             version_number=1,
             modified_by=owner,
             modification_date=datetime.now(),
-            size=file_size
+            file_size=file_size
         )
 
         super().__init__(

@@ -55,7 +55,8 @@ class KMS_APIRouter(IAPIRouter):
 
     async def verify_token(self, credentials: HTTPAuthorizationCredentials = Depends(security)):
         try:
-            payload = self.decode_token(credentials.credentials)
+            token = credentials.credentials
+            payload = KMS_APIRouter.decode_token(token)
             email: str = payload.get("sub")
             if email is None:
                 raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
@@ -374,15 +375,15 @@ class KMS_APIRouter(IAPIRouter):
         try:
             success = self.knowledge.restore_version(
                 document_id=document_id,
-                restored_by=restored_by,
-                version_number=version_number
+                version_number=version_number,
+                restored_by=restored_by
             )
             if not success:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Failed to restore version. Document or version not found or access denied."
+                    detail="Document version not found or restore failed"
                 )
-            return {"message": "Version restored successfully"}
+            return {'message': 'Document version restored successfully'}
         except HTTPException:
             raise
         except Exception as e:

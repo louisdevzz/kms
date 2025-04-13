@@ -5,8 +5,7 @@ start docker for mongo db
 start docker for minio storage
 
 ```docker compose -f docker-compose.minio.yml up -d
-```
-
+``
 at KMS-SoftwareDesign folder run this command to start system
 
 ```uvicorn backend.app:app --reload

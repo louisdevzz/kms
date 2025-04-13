@@ -66,52 +66,49 @@ class ManagementDAO(IManagementDAO):
 
     # Document
     def saveDocument(self, document: Document, content: Optional[BinaryIO] = None) -> dict:
+        global object_name
         result = {}
         try:
-            # save metadata to mongo
-            if not self.document_dao.save(document):
-                raise Exception("Failed to save document metadata to MongoDB")
-
-            saved_doc = self.document_dao.findByName(name=document.name)
-
-            # add all permissions for owner
-            permission = Permission(
-                userId=document.owner,
-                docId=saved_doc.documentId,
-                permissions=["read", "write", "share", "delete"]
-            )
-            if not self.permission_dao.save(permission):
-                raise Exception("Failed to save permission to MongoDB")
-
-            result['document'] = saved_doc
-
-            # save content to Minio
+            # Save content to MinIO first (if provided)
             if content is not None:
                 object_name = f"{document.documentId}/v{document.currentNumber}"
 
                 if not self._minio_storage.addDoc(
                         object_name=object_name,
                         data=content,
-                        length=document.size,
+                        length=document.versions[0].file_size,
                         content_type=document.dType
                 ):
-                    # failed to store to minio --> drawback on mongo
-                    self.document_dao.delete(document.documentId)
-                    raise Exception("Failed to store content in Minio")
+                    raise Exception("❌ Failed to store content in MinIO")
 
                 result['content_url'] = self._minio_storage.getDocUrl(
                     object_name=object_name,
                     expires=timedelta(hours=24)
                 )
 
-        except Exception as e:
-            if 'document' in result:
+            # Save metadata to MongoDB
+            if not self.document_dao.save(document):
+                # If document fails to save after MinIO, rollback MinIO
+                if 'content_url' in result:
+                    self._minio_storage.deleteDoc(object_name)
+                raise Exception("❌ Failed to save document metadata to MongoDB")
+
+            # Add permission for owner
+            permission = Permission(
+                userId=document.owner,
+                docId=document.documentId,
+                permissions=["read", "write", "share", "delete"]
+            )
+            if not self.permission_dao.save(permission):
+                # Rollback Mongo and MinIO
                 self.document_dao.delete(document.documentId)
+                if 'content_url' in result:
+                    self._minio_storage.deleteDoc(object_name)
+                raise Exception("❌ Failed to save permission to MongoDB")
 
-            if 'content_url' in result:
-                object_name = f"{document.documentId}/v{document.currentNumber}"
-                self._minio_storage.deleteDoc(object_name)
+            result['document'] = document  # use the one already passed
 
+        except Exception as e:
             result = {'error': str(e)}
 
         return result

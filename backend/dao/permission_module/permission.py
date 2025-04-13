@@ -5,7 +5,7 @@ from backend.dao.permission_module.ipermission import IPermission
 
 
 class Permission(BaseModel, IPermission):
-    permissionId: str = Field(..., description="Unique identifier for the permission_module")
+    permissionId: str = Field(default_factory=lambda: str(ObjectId()), description="Unique identifier")  # Auto-generated
     userId: str = Field(..., description="ID of the user_module with permissions")
     docId: str = Field(..., description="ID of the document_module being accessed")
     permissions: List[str] = Field(..., description="List of permission_module strings")
@@ -18,9 +18,8 @@ class Permission(BaseModel, IPermission):
             **kwargs
     ):
         super().__init__(
-            permissionID=str(ObjectId()),
-            userID=userId,
-            docID=docId,
+            userId=userId,
+            docId=docId,
             permissions=permissions,
             **kwargs
         )
