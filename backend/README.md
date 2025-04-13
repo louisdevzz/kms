@@ -1,12 +1,21 @@
-start docker for mongo db
+## 🧰 Getting Started
 
-```docker compose -f docker-compose.mongo.yml up -d
+Follow these steps to run the system locally.
+
+---
+
+### 🐳 Start Required Docker Services
+
+#### 1. Start MongoDB
+```bash
+docker compose -f docker-compose.mongo.yml up -d
 ```
-start docker for minio storage
+#### 2. Start MinIO Storage
+```bash
+docker compose -f docker-compose.minio.yml up -d
+```
 
-```docker compose -f docker-compose.minio.yml up -d
-``
-at KMS-SoftwareDesign folder run this command to start system
-
-```uvicorn backend.app:app --reload
+### 🚀 Start the FastAPI Backend at KMS-SofwareDesign folder
+```bash
+uvicorn backend.app:app --reload
 ```
