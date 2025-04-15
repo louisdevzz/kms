@@ -17,5 +17,5 @@ docker compose -f docker-compose.minio.yml up -d
 
 ### 🚀 Start the FastAPI Backend at KMS-SofwareDesign folder
 ```bash
-uvicorn backend.app:app --reload
+./backend/start.sh # cd KMS-SoftwareDesign 
 ```

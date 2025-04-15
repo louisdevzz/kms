@@ -11,7 +11,7 @@ class UserDAO(IUserDAO):
         self.collection = self.db[collection]
 
     def save(self, user: User) -> bool:
-        user_dict = user.dict()
+        user_dict = dict(user)
         user_dict["_id"] = ObjectId(user_dict["userId"])  # Convert to ObjectId
         del user_dict["userId"]
         result = self.collection.insert_one(user_dict)
