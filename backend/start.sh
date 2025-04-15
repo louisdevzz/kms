@@ -2,27 +2,39 @@
 
 # Configuration
 VENV_DIR="backend/venv"
-REQUIREMENTS_FILE="backend/requirements.txt"
+REQUIREMENTS_FILE="requirements.txt"
 APP_MODULE="backend.api.app:app"
 
-# Function to check if venv exists
-venv_exists() {
-    [ -d "$VENV_DIR" ] && [ -f "$VENV_DIR/bin/activate" ]
+# Function to handle cleanup
+cleanup() {
+    echo "Stopping containers..."
+    docker compose -f docker-compose.mongo.yml down
+    docker compose -f docker-compose.minio.yml down
+    deactivate 2>/dev/null  # Silently deactivate venv if active
+    echo "Cleanup complete"
+    exit 0
 }
 
-# Create virtual environment if it doesn't exist
-if ! venv_exists; then
-    echo "Creating virtual environment in $VENV_DIR..."
-    python -m venv "$VENV_DIR"
+trap cleanup SIGINT EXIT
 
-    # Check if venv was created successfully
-    if ! venv_exists; then
-        echo "Failed to create virtual environment"
-        exit 1
-    fi
+# Start MongoDB container
+echo "Starting MongoDB container..."
+docker compose -f docker-compose.mongo.yml up -d
+
+# Start MinIO container
+echo "Starting MinIO container..."
+docker compose -f docker-compose.minio.yml up -d
+
+# Wait for services to initialize
+echo "Waiting 5 seconds for services..."
+sleep 5
+
+# Virtual environment setup
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Creating virtual environment..."
+    python -m venv "$VENV_DIR"
 fi
 
-# Activate the virtual environment
 echo "Activating virtual environment..."
 source "$VENV_DIR/bin/activate"
 
@@ -32,12 +44,10 @@ if [ -f "$REQUIREMENTS_FILE" ]; then
     pip install --upgrade pip
     pip install -r "$REQUIREMENTS_FILE"
 else
-    echo "Warning: $REQUIREMENTS_FILE not found. Skipping package installation."
+    echo "Warning: Requirements file not found"
 fi
 
-# Run the FastAPI app
+# Run FastAPI app
 echo "Starting Uvicorn server..."
 uvicorn "$APP_MODULE" --reload
 
-# Deactivate virtual environment when done
-deactivate
