@@ -13,8 +13,7 @@ logger = logging.getLogger(__name__)
 async def lifespan(kms_app: FastAPI):
     # Startup code
     try:
-        management_dao = ManagementDAO()
-        knowledge_manager = KnowledgeManager(management_dao)
+        knowledge_manager = KnowledgeManager()
         kms_app.state.api_router = KMS_APIRouter(knowledge_manager)
         kms_app.include_router(kms_app.state.api_router.router)
         logger.info("Resources initialized successfully.")
@@ -25,7 +24,7 @@ async def lifespan(kms_app: FastAPI):
     yield  # now running
 
     logger.info("Cleaning up resources...")
-    management_dao.close_connection()  # close connection to db
+    knowledge_manager.dao.close_connection()  # close connection to db
 
 
 app = FastAPI(

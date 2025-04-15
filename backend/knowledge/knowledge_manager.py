@@ -7,11 +7,11 @@ from backend.knowledge.iknowledge_manager import IKnowledgeManager
 
 
 class KnowledgeManager(IKnowledgeManager):
-    def __init__(self, management_dao: ManagementDAO):
-        self._dao = management_dao
-        self._auth = AuthManager(management_dao)
-        self._docs = DocumentManager(management_dao)
-        self._perms = PermissionManager(management_dao)
+    def __init__(self):
+        self.dao = ManagementDAO()
+        self._auth = AuthManager(self.dao)
+        self._docs = DocumentManager(self.dao)
+        self._perms = PermissionManager(self.dao)
 
     # Authentication
     def sign_up(self, email: str, password: str, name: str, department_id: str, roles: List[str]) -> bool:
