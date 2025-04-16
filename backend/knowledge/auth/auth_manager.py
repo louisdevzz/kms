@@ -34,6 +34,8 @@ class AuthManager(IAuthManager):
 
     def check_password(self, email: str, password: str) -> bool:
         user = self._dao.findUserByEmail(email)
+        
+        print(type(password))
         if not user:
             return False
 
@@ -41,7 +43,7 @@ class AuthManager(IAuthManager):
             hashed = user.get_password()
         except ValueError:
             return False
-
+        print(hashed)
         return verify_password(password, hashed)
 
     def get_user_information(self, user_id: str) -> Optional[User]:

@@ -53,6 +53,17 @@ class KnowledgeManager(IKnowledgeManager):
 
     def get_content(self, document_id: str, user_id: str) -> Optional[BinaryIO]:
         return self._docs.get_content(document_id=document_id, user_id=user_id)
+    
+    def get_all_content(self, user_id: str) -> List[BinaryIO]:
+        all_metadata = self.get_all_metadata()  
+        all_contents = []
+
+        for document_id in all_metadata.keys():
+            content = self.get_content(document_id=document_id, user_id=user_id)
+            if content:
+                all_contents.append(content)
+
+        return all_contents           
 
     def update_metadata(self, modified_by: str, document_id: str, new_name: str,
                         new_department_id: str, new_tags: List[str],

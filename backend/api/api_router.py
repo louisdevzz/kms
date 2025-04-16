@@ -1,7 +1,7 @@
 from backend.utils.config_loader import get_secret_key
 from typing import Optional, List
 from backend.knowledge.knowledge_manager import KnowledgeManager
-from fastapi import HTTPException, Depends, status, APIRouter, Form, UploadFile, File, Body
+from fastapi import HTTPException, Depends, status, APIRouter, Form, UploadFile, File, Body, Query
 import logging
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 # JWT Config
 SECRET_KEY = get_secret_key()
+
+print(get_secret_key)
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 security = HTTPBearer()
@@ -33,6 +35,7 @@ class KMS_APIRouter(IAPIRouter):
         self.router.get("/kms/auth/me")(self.get_current_user)
         self.router.get("/kms/document/{document_id}")(self.get_document_meta)
         self.router.get("/kms/document/{document_id}/content")(self.get_document_content)
+        self.router.get("/kms/document/content")(self.get_all_documents_content)
         self.router.put("/kms/document/{document_id}")(self.update_document_meta)
         self.router.put("/kms/document/{document_id}/content")(self.update_document_content)
         self.router.delete("/kms/document/{document_id}")(self.delete_document)
@@ -202,6 +205,28 @@ class KMS_APIRouter(IAPIRouter):
                     detail="Document content not found or access denied"
                 )
             return {'content': content}
+
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=str(e)
+            )
+    # get all document content
+    async def get_all_documents_content(
+        self,
+        user_id: str = Query(...),
+        _: None = Depends(verify_token)
+    ):
+        try:
+            contents = self.knowledge.get_all_content(user_id=user_id)
+
+            if not contents:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="No document content found or access denied"
+                )
+
+            return {"contents": [c.read() for c in contents]}  # or return as StreamingResponse if large
 
         except Exception as e:
             raise HTTPException(

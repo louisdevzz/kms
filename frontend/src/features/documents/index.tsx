@@ -24,6 +24,13 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { PDFViewerDialog } from '@/components/pdf-viewer-dialog'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
+interface User {
+  email: string
+  name: string
+  roles: string[]
+  department_id: string,
+  userId: string,
+}
 
 const DocumentCard = ({ document }: { document: any }) => {
   const [isViewerOpen, setIsViewerOpen] = useState(false)
@@ -82,17 +89,68 @@ export default function Apps() {
   const [sort, setSort] = useState('ascending')
   const [searchTerm, setSearchTerm] = useState('')
 
-  const fetchDocuments = async () => {
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}/knowledge/documents/user?user=aaaaaaaaaaaaaa`)
+
+
+  const getCurrentUser = async (): Promise<User> => {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/kms/auth/me`,{
+      headers:{
+        "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2b2h1dW5oYW4xMzEwQGdtYWlsLmNvbSIsImV4cCI6MTc0NDgwNzM2MH0.CEK3FMP7EjmAAygxe_EHr_4yBRXQFW7vANShjgW6u8c`,
+        "Accept": "application/json"
+      }
+    })
     return response.data
   }
 
-  const { data: documents } = useQuery({
-    queryKey: ['documents'],
-    queryFn: () => fetchDocuments(),
+  const {data: user} = useQuery({
+    queryKey: ['currentUser'],
+    queryFn: getCurrentUser,
   })
 
-  // console.log(documents)
+  console.log(user)
+
+  const userId = user?.email
+  console.log("userid",userId)
+
+  const fetchDocuments = async () => {
+    if (!userId) {
+      throw new Error('User ID is required to fetch documents')
+    }
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/kms/document/content?user_id=${userId}`,{
+      headers:{
+        "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2b2h1dW5oYW4xMzEwQGdtYWlsLmNvbSIsImV4cCI6MTc0NDgwNzM2MH0.CEK3FMP7EjmAAygxe_EHr_4yBRXQFW7vANShjgW6u8c`,
+        "Accept": "application/json"
+      }
+    })
+    return response.data
+  }
+
+  const { data: documents, error } = useQuery({
+    queryKey: ['documents'],
+    queryFn: () => fetchDocuments(),
+    enabled: !!userId, // Only run the query if userId exists
+  })
+
+  if (error) {
+    return (
+      <>
+        <Header>
+          <Search />
+          <div className='ml-auto flex items-center gap-4'>
+            <ThemeSwitch />
+            <ProfileDropdown />
+          </div>
+        </Header>
+        <Main fixed>
+          <div className="flex flex-col items-center justify-center h-[50vh]">
+            <h1 className="text-2xl font-bold text-red-500 mb-2">Error</h1>
+            <p className="text-muted-foreground">Unable to fetch documents. Please try again later.</p>
+          </div>
+        </Main>
+      </>
+    )
+  }
+
+  console.log(documents)
 
 
   return (

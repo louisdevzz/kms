@@ -17,18 +17,24 @@ from backend.dao.imanagement_dao import IManagementDAO
 
 
 class ManagementDAO(IManagementDAO):
-    def __init__(self, mongo_client=None, database_name=None):
-        if mongo_client is None or database_name is None:
-            mongo_config = get_db_config()
-            mongo_client = MongoClient(mongo_config['uri'])
-            database_name = mongo_config['db_name']
+    def __init__(self):
+        # if mongo_client is None or database_name is None:
+        #     mongo_config = get_db_config()
+        #     mongo_client = MongoClient(mongo_config['uri'])
+        #     database_name = mongo_config['db_name']
+            
+    
+        """single MongoDB connection"""
+        mongo_config = get_db_config()
+        mongo_client = MongoClient(mongo_config['uri'])
+        database_name = mongo_config['db_name']
+        
+        self.mongo_client = mongo_client
+        self.database_name = database_name
 
         minio_config = get_storage_config()
         collects = get_collections()
 
-        """single MongoDB connection"""
-        self.mongo_client = mongo_client
-        self.database_name = database_name
 
         # daos
         self.user_dao = UserDAO(self.mongo_client, self.database_name, collects['user_dao'])

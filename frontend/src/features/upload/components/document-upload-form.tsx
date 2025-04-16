@@ -45,41 +45,52 @@ export function DocumentUploadForm() {
   const form = useForm<DocumentForm>({
     resolver: zodResolver(documentSchema),
     defaultValues: {
-      file: undefined,
-      content: '',
-      owner: '',
+      document: undefined,
+      name:'a',
+      doc_type:'pdf',
+      owner: 'vohuunhan1310@gmail.com',
+      tags:['a'],
       category: [],
-      department: '',
+      department_id: '',
       description: '',
-      university: '',
-      addition: undefined,
+      university: ''
     },
   })
 
   const onSubmit = async (data: DocumentForm) => {
+    console.log("uploading")
     try {
       const formData = new FormData()
-      if (data.file && data.file[0]) {
-        formData.append('file', data.file[0])
+      if (data.document && data.document[0]) {
+        formData.append('document', data.document[0])
       }
-      formData.append('content', data.content)
+      formData.append('name', data.name)
+      formData.append('doc_type', data.doc_type)
       formData.append('owner', data.owner)
+      formData.append('department_id', data.department_id)
+      formData.append('description', data.description)
+      formData.append('university', data.university)
+
+      // Append tags as individual items
+      data.tags.forEach((tag) => {
+        formData.append('tags[]', tag)
+      })
       
       // Append each category individually
       data.category.forEach((category) => {
-        formData.append('category', category)
+        formData.append('category[]', category)
       })
-      
-      formData.append('department', data.department)
-      formData.append('description', data.description)
-      formData.append('university', data.university)
-      
-      // Only append addition if it exists and is not empty
-      if (data.addition && Object.keys(data.addition).length > 0) {
-        formData.append('addition', JSON.stringify(data.addition))
+
+      console.log('FormData contents:')
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}:  ${(value)}`)
       }
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/knowledge/documents`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/kms/document?self=true`, {
+        headers:{
+          "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2b2h1dW5oYW4xMzEwQGdtYWlsLmNvbSIsImV4cCI6MTc0NDgwNzM2MH0.CEK3FMP7EjmAAygxe_EHr_4yBRXQFW7vANShjgW6u8c`,
+          "Accept": "application/json"
+        },
         method: 'POST',
         body: formData,
       })
@@ -88,6 +99,7 @@ export function DocumentUploadForm() {
         const errorData = await response.json()
         throw new Error(errorData.detail || 'Failed to upload document')
       }
+      console.log(await response.json())
 
       toast({
         title: 'Success',
@@ -141,7 +153,7 @@ export function DocumentUploadForm() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="file"
+                name="document"
                 render={({ field: { onChange, value, ...field } }) => (
                   <FormItem>
                     <FormLabel>File</FormLabel>
@@ -154,20 +166,6 @@ export function DocumentUploadForm() {
                         }}
                         {...field}
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="content"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Content</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -244,7 +242,7 @@ export function DocumentUploadForm() {
 
               <FormField
                 control={form.control}
-                name="department"
+                name="department_id"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Department</FormLabel>

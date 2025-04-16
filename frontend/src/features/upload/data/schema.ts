@@ -29,18 +29,19 @@ export const categoryEnum = z.enum([
 export type Category = z.infer<typeof categoryEnum>
 
 export const documentSchema = z.object({
-  file: z
+  document: z
     .instanceof(FileList)
     .refine((files) => files.length > 0, {
       message: 'Please upload a file',
     }),
-  content: z.string().min(1, 'Content is required'),
+  name: z.string(),
+  doc_type: z.string(),
   owner: z.string().min(1, 'Owner is required'),
   category: z.array(categoryEnum).min(1, 'At least one category is required'),
-  department: z.string().min(1, 'Department is required'),
+  tags:z.array(z.string()),
+  department_id: z.string().min(1, 'Department is required'),
   description: z.string().min(1, 'Description is required'),
   university: z.string().min(1, 'University is required'),
-  addition: z.record(z.any()).optional(),
 })
 
 export type DocumentForm = z.infer<typeof documentSchema>

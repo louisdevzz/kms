@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
+import axios from "axios"
 
 type UserAuthFormProps = HTMLAttributes<HTMLDivElement>
 
@@ -47,23 +48,41 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    
-    // Simulate authentication success
-    const fakeAuthData = {
-      user: {
-        email: data.email,
-        id: '123',
-      },
-      token: 'fake-jwt-token',
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    try {
+      setIsLoading(true)
+      // console.log('Form data:', data)
+      
+      const formData = new FormData()
+      formData.append('email', data.email)
+      formData.append('password', data.password)
+
+      // Log the actual contents of FormData
+      console.log('FormData contents:')
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}:  ${typeof(value)}`)
+      }
+
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/kms/auth/login`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      console.log(res)
+
+      if(res.status == 200){
+        console.log("login successfully")
+        setAuth(res.data.access_token)
+        navigate({to: "/"})
+      }
+      // Handle successful signup here
+    } catch (error) {
+      console.error('Signup error:', error)
+      // Handle error here
+    } finally {
+      setIsLoading(false)
     }
-
-    // Save to localStorage with expiration
-    setAuth(fakeAuthData)
-
-    // Navigate to home page after successful login
-    navigate({ to: '/' })
   }
 
   return (

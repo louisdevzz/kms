@@ -2,7 +2,7 @@
 
 # Configuration
 VENV_DIR="backend/venv"
-REQUIREMENTS_FILE="requirements.txt"
+REQUIREMENTS_FILE="backend/requirements.txt"
 APP_MODULE="backend.api.app:app"
 
 # Function to handle cleanup
@@ -19,15 +19,15 @@ trap cleanup SIGINT EXIT
 
 # Start MongoDB container
 echo "Starting MongoDB container..."
-docker compose -f docker-compose.mongo.yml up -d
+docker compose -f backend/docker/docker-compose.mongo.yml up -d
 
 # Start MinIO container
 echo "Starting MinIO container..."
-docker compose -f docker-compose.minio.yml up -d
+docker compose -f backend/docker/docker-compose.minio.yml up -d
 
 # Wait for services to initialize
 echo "Waiting 5 seconds for services..."
-sleep 5
+sleep 2
 
 # Virtual environment setup
 if [ ! -d "$VENV_DIR" ]; then
@@ -49,5 +49,5 @@ fi
 
 # Run FastAPI app
 echo "Starting Uvicorn server..."
-uvicorn "$APP_MODULE" --reload
+uvicorn "$APP_MODULE" --host 0.0.0.0 --port 8000 --reload
 

@@ -16,6 +16,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { useNavigate } from '@tanstack/react-router'
+import axios from 'axios'
 
 type SignUpFormProps = HTMLAttributes<HTMLDivElement>
 
@@ -33,11 +34,9 @@ const formSchema = z
       .min(7, {
         message: 'Password must be at least 7 characters long',
       }),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match.",
-    path: ['confirmPassword'],
+    department_id: z.string(),
+    roles: z.array(z.string()),
+    name: z.string()
   })
 
 export function SignUpForm({ className, ...props }: SignUpFormProps) {
@@ -48,16 +47,40 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
     defaultValues: {
       email: '',
       password: '',
-      confirmPassword: '',
+      department_id:"aaaaa",
+      roles:["a"],
+      name:"a",
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
+    try {
+      const formData = new FormData()
+      formData.append('email', data.email)
+      formData.append('password', data.password)
+      formData.append('name', data.name)
+      formData.append('department_id', data.department_id)
+      data.roles.forEach(role => {
+        formData.append('roles', role)
+      })
 
-    navigate({ to: '/' })
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/kms/auth/signup`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      if(res.status == 200){
+        navigate({to: "/sign-in"})
+      }
+      // Handle successful signup here
+    } catch (error) {
+      console.error('Signup error:', error)
+      // Handle error here
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -93,12 +116,12 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
             />
             <FormField
               control={form.control}
-              name='confirmPassword'
+              name='name'
               render={({ field }) => (
                 <FormItem className='space-y-1'>
-                  <FormLabel>Confirm Password</FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <PasswordInput placeholder='********' {...field} />
+                    <Input placeholder='Join' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
