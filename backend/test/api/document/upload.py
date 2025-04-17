@@ -2,6 +2,8 @@ import requests
 import logging
 import io
 from backend.test.api.auth.login import test_login
+import json
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -22,7 +24,8 @@ def upload_document_with_token(token):
             "name": "Test Text Document",
             "doc_type": "text",
             "department_id": "dept_123",
-            "tags": ["text", "sample"],
+            # "tags": json.dumps(["text", "sample", "test"]),
+            "tags": ["test", "example"],
             "owner": "test@example.com",
             "category": "testing",
             "description": "Test text file upload",
@@ -39,9 +42,9 @@ def upload_document_with_token(token):
 
         form_data = []
         for key, value in metadata.items():
-            if isinstance(value, list):
+            if key == "tags" and isinstance(value, list):
                 for item in value:
-                    form_data.append((f"{key}[]", str(item)))
+                    form_data.append((key, str(item)))
             else:
                 form_data.append((key, str(value)))
 
@@ -58,7 +61,7 @@ def upload_document_with_token(token):
         )
 
         if response.status_code == 200:
-            logger.info("✅ Text document upload successful!")
+            logger.info(f"✅ Text document upload successful!")
             return response.json()
         else:
             logger.error(f"❌ Upload failed with status {response.status_code}")

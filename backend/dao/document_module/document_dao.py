@@ -23,6 +23,7 @@ class DocumentDAO(IDocumentDAO):
             doc["documentId"] = str(doc["_id"])
             del doc["_id"]
             doc["file_size"] = doc["versions"][0]["file_size"]
+            doc["modification_date"] = doc["versions"][0]["modification_date"]
             doc.pop("versions", None)
 
             return Document(**doc)

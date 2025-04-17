@@ -1,6 +1,7 @@
 from backend.utils.config_loader import get_secret_key
 from typing import Optional, List
 from backend.knowledge.knowledge_manager import KnowledgeManager
+from backend.dao.user_module.user import User
 from fastapi import HTTPException, Depends, status, APIRouter, Form, UploadFile, File, Body, Query
 import logging
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -9,7 +10,6 @@ from datetime import datetime, timedelta
 from io import BytesIO
 from backend.api.iapi_router import IAPIRouter
 from fastapi.responses import StreamingResponse
-import zipfile
 
 
 logger = logging.getLogger(__name__)
@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 # JWT Config
 SECRET_KEY = get_secret_key()
 
-print(get_secret_key)
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 security = HTTPBearer()
@@ -30,14 +29,16 @@ class KMS_APIRouter(IAPIRouter):
         self._register_routes()
 
     def _register_routes(self):
-        # define endpoints and where implement
+        # auth
         self.router.post("/kms/auth/signup")(self.sign_up)
         self.router.post("/kms/auth/login")(self.login)
         self.router.post("/kms/document")(self.upload_document)
         self.router.get("/kms/auth/me")(self.get_current_user)
+        # doc
+        self.router.get("/kms/document/ids")(self.get_doc_ids)
         self.router.get("/kms/document/{document_id}")(self.get_document_meta)
         self.router.get("/kms/document/{document_id}/content")(self.get_document_content)
-        self.router.get("/kms/document/content")(self.get_all_documents_content)
+
         self.router.put("/kms/document/{document_id}")(self.update_document_meta)
         self.router.put("/kms/document/{document_id}/content")(self.update_document_content)
         self.router.delete("/kms/document/{document_id}")(self.delete_document)
@@ -167,13 +168,19 @@ class KMS_APIRouter(IAPIRouter):
     async def get_document_meta(
         self,
         document_id: str,
-        user_id: str,
-        _: None = Depends(verify_token)
+        credentials: HTTPAuthorizationCredentials = Depends(security)
     ):
         try:
+            payload = self.decode_token(credentials.credentials)
+            email: str = payload.get("sub")
+            if email is None:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+            current_user = self.knowledge.get_user_by_email(email)
+
             metadata = self.knowledge.get_metadata(
                 document_id=document_id,
-                user_id=user_id
+                user_id=current_user.userId
             )
             if not metadata:
                 raise HTTPException(
@@ -181,8 +188,6 @@ class KMS_APIRouter(IAPIRouter):
                     detail="Document not found or access denied"
                 )
             return metadata
-        except HTTPException:
-            raise
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -193,13 +198,19 @@ class KMS_APIRouter(IAPIRouter):
     async def get_document_content(
             self,
             document_id: str,
-            user_id: str,
-            _: None = Depends(verify_token)
+            credentials: HTTPAuthorizationCredentials = Depends(security)
     ):
         try:
+            payload = self.decode_token(credentials.credentials)
+            email: str = payload.get("sub")
+            if email is None:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+            current_user = self.knowledge.get_user_by_email(email)
+
             content = self.knowledge.get_content(
                 document_id=document_id,
-                user_id=user_id
+                user_id=current_user.userId
             )
             if not content:
                 raise HTTPException(
@@ -230,47 +241,35 @@ class KMS_APIRouter(IAPIRouter):
             )
 
     # get all document content
-    async def get_all_documents_content(
+    async def get_doc_ids(
             self,
-            user_id: str,
-            _: None = Depends(verify_token)
+            credentials: HTTPAuthorizationCredentials = Depends(security)
     ):
         try:
-            contents = self.knowledge.get_all_content(user_id=user_id)
-            if not contents:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="No accessible documents found"
-                )
+            payload = self.decode_token(credentials.credentials)
+            email: str = payload.get("sub")
+            if email is None:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
-            # Create in-memory ZIP file
-            zip_buffer = BytesIO()
-            with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
-                for i, content in enumerate(contents):
-                    try:
-                        # Read content and add to ZIP
-                        file_data = content.read()
-                        zip_file.writestr(f"document_{i}", file_data)
-                    finally:
-                        content.close()
+            current_user = self.knowledge.get_user_by_email(email)
 
-            # Return as streaming response
-            zip_buffer.seek(0)
-            return StreamingResponse(
-                zip_buffer,
-                media_type="application/zip",
-                headers={
-                    "Content-Disposition": "attachment; filename=documents.zip",
-                    "X-Document-Count": str(len(contents))
-                }
-            )
+            doc_ids = self.knowledge.get_doc_ids(user_id=current_user.userId)
+
+            if not doc_ids:
+                return {"messgae": "Not Found"}
+                # raise HTTPException(
+                #     status_code=status.HTTP_404_NOT_FOUND,
+                #     detail="No accessible documents found"
+                # )
+
+            return doc_ids
 
         except HTTPException:
             raise
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to package documents: {str(e)}"
+                detail=f"Failed to retrieve document IDs: {str(e)}"
             )
 
     # update document metadata

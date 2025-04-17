@@ -47,7 +47,6 @@ class IAPIRouter(ABC):
     async def get_document_meta(
             self,
             document_id: str,
-            user_id: str,
             credentials: HTTPAuthorizationCredentials
     ) -> dict: pass
 
@@ -55,7 +54,6 @@ class IAPIRouter(ABC):
     async def get_document_content(
             self,
             document_id: str,
-            user_id: str,
             credentials: HTTPAuthorizationCredentials
     ) -> dict: pass
 

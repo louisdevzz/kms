@@ -30,6 +30,9 @@ class IKnowledgeManager(ABC):
     def get_content(self, document_id: str, user_id: str) -> Optional[BinaryIO]: pass
 
     @abstractmethod
+    def get_doc_ids(self, user_id: str) -> List[str]:pass
+
+    @abstractmethod
     def update_metadata(self, modified_by: str, document_id: str, new_name: str,
                         new_department_id: str, new_tags: List[str],
                         new_owner: str, new_category: str,

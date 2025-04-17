@@ -8,8 +8,8 @@ APP_MODULE="backend.api.app:app"
 # Function to handle cleanup
 cleanup() {
     echo "Stopping containers..."
-    docker compose -f docker-compose.mongo.yml down
-    docker compose -f docker-compose.minio.yml down
+    docker compose -f backend/docker/docker-compose.mongo.yml down
+    docker compose -f backend/docker/docker-compose.minio.yml down
     deactivate 2>/dev/null  # Silently deactivate venv if active
     echo "Cleanup complete"
     exit 0

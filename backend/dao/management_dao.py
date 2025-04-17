@@ -101,8 +101,9 @@ class ManagementDAO(IManagementDAO):
                 raise Exception("❌ Failed to save document metadata to MongoDB")
 
             # Add permission for owner
+            user = self.user_dao.findByEmail(document.owner)
             permission = Permission(
-                userId=document.owner,
+                userId=user.userId,
                 docId=document.documentId,
                 permissions=["read", "write", "share", "delete"]
             )
@@ -114,7 +115,7 @@ class ManagementDAO(IManagementDAO):
                 raise Exception("❌ Failed to save permission to MongoDB")
 
             activity_log = ActivityLog(
-                userId=document.owner,
+                userId=user.userId,
                 docId=document.documentId,
                 action="upload document",
                 description=f"Document {document.name} uploaded by {document.owner}",
@@ -254,3 +255,7 @@ class ManagementDAO(IManagementDAO):
 
     def deleteActivitylog(self, log_id: str) -> bool:
         return self.activity_log_dao.delete(log_id)
+
+    # mino
+    def deleteDoc(self, object_name:str) -> bool:
+        return self._minio_storage.deleteDoc(object_name=object_name)

@@ -26,8 +26,8 @@ class DocumentManager(IDocumentManager):
                 description=description,
                 university=university,
                 file_size=file_size,
-                tags=[tags] if tags else [],
-                category=[category] if category else []
+                tags=tags,
+                category=category
             )
             result = self._dao.saveDocument(doc, content)
             return result

@@ -1,18 +1,15 @@
 import requests
 
-document_id = "67ff6896f9ff7650461d5b09"
+document_id = "68009cc91b467653242312c2"
 
 url = f"http://localhost:8000/kms/document/{document_id}/content?self=true"
 
-params = {
-    "user_id": "vohuunhan1310@gmail.com",
-}
 
 headers = {
-    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2b2h1dW5oYW4xMzEwQGdtYWlsLmNvbSIsImV4cCI6MTc0NDg4Njc0Mn0.8LKf6QbtXP3UD9PxPlLPfvD_xWKDqzTypwlsjF562xQ"
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2b2h1dW5oYW4xMzEwQGdtYWlsLmNvbSIsImV4cCI6MTc0NDg5ODQ0NH0.2Qu6UgCvl801TzqCkFVHHCys71D2WHH3R7IE5c_OQew"
 }
 
-response = requests.get(url, params=params, headers=headers)
+response = requests.get(url, headers=headers)
 
 print("Status Code:", response.status_code)
 

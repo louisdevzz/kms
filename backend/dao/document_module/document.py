@@ -19,7 +19,7 @@ class Document(BaseModel, IDocument):
     dType: str = Field(..., description="File type (e.g., PDF, DOCX, JPEG)")
     departmentId: str = Field(..., description="Reference to Departments collection")
     tags: List[str] = Field([], description="Keywords describing the document content")
-    category: List[str] = Field([], description="Broad categorization of the document")
+    category: str = Field(..., description="Broad categorization of the document")
     description: str = Field(..., description="Brief description of the document contents")
     university: str = Field(..., description="University associated with the document")
     additional: Optional[Dict] = Field(None, description="Extra metadata")
@@ -37,14 +37,14 @@ class Document(BaseModel, IDocument):
             file_size: int,
             currentNumber: int = 1,
             tags: List[str] = None,
-            category: List[str] = None,
+            category: str = None,
             additional: Optional[Dict] = None,
             **kwargs
     ):
         initial_version = Version(
             version_number=1,
             modified_by=owner,
-            modification_date=datetime.now(),
+            modification_date=kwargs.get('modification_date', datetime.now()),
             file_size=file_size
         )
 

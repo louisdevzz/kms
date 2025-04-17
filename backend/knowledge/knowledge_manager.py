@@ -58,14 +58,9 @@ class KnowledgeManager(IKnowledgeManager):
             raise PermissionError("User does not have permission to read the document.")
         return self._docs.get_content(document_id=document_id, user_id=user_id)
 
-    def get_all_content(self, user_id: str) -> List[BinaryIO]:
+    def get_doc_ids(self, user_id: str) -> List[str]:
         document_ids = self._perms.get_docId_by_userId(user_id)
-        all_contents = []
-        for document_id in document_ids:
-            content = self.get_content(document_id=document_id, user_id=user_id)
-            if content:
-                all_contents.append(content)
-        return all_contents
+        return document_ids
 
     def update_metadata(self, modified_by: str, document_id: str, new_name: str,
                         new_department_id: str, new_tags: List[str],
