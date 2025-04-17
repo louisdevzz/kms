@@ -9,9 +9,9 @@ from backend.knowledge.iknowledge_manager import IKnowledgeManager
 class KnowledgeManager(IKnowledgeManager):
     def __init__(self):
         self.dao = ManagementDAO()
+        self._perms = PermissionManager(self.dao)
         self._auth = AuthManager(self.dao)
         self._docs = DocumentManager(self.dao)
-        self._perms = PermissionManager(self.dao)
 
     # Authentication
     def sign_up(self, email: str, password: str, name: str, department_id: str, roles: List[str]) -> bool:
@@ -49,26 +49,31 @@ class KnowledgeManager(IKnowledgeManager):
         )
 
     def get_metadata(self, document_id: str, user_id: str) -> Dict[str, object]:
+        if not self._perms.has_permission(user_id=user_id, document_id=document_id, required="read"):
+            raise PermissionError("User does not have permission to read the document.")
         return self._docs.get_metadata(document_id=document_id, user_id=user_id)
 
     def get_content(self, document_id: str, user_id: str) -> Optional[BinaryIO]:
+        if not self._perms.has_permission(user_id=user_id, document_id=document_id, required="read"):
+            raise PermissionError("User does not have permission to read the document.")
         return self._docs.get_content(document_id=document_id, user_id=user_id)
-    
-    def get_all_content(self, user_id: str) -> List[BinaryIO]:
-        all_metadata = self.get_all_metadata()  
-        all_contents = []
 
-        for document_id in all_metadata.keys():
+    def get_all_content(self, user_id: str) -> List[BinaryIO]:
+        document_ids = self._perms.get_docId_by_userId(user_id)
+        all_contents = []
+        for document_id in document_ids:
             content = self.get_content(document_id=document_id, user_id=user_id)
             if content:
                 all_contents.append(content)
-
-        return all_contents           
+        return all_contents
 
     def update_metadata(self, modified_by: str, document_id: str, new_name: str,
                         new_department_id: str, new_tags: List[str],
                         new_owner: str, new_category: str,
                         new_description: str, new_university: str) -> bool:
+
+        if not self._perms.has_permission(user_id=modified_by, document_id=document_id, required="write"):
+            raise PermissionError("User does not have permission to write the document.")
         return self._docs.update_metadata(
             modified_by=modified_by,
             document_id=document_id,
@@ -82,6 +87,8 @@ class KnowledgeManager(IKnowledgeManager):
         )
 
     def update_content(self, document_id: str, modified_by: str, new_content: BinaryIO) -> bool:
+        if not self._perms.has_permission(user_id=modified_by, document_id=document_id, required="write"):
+            raise PermissionError("User does not have permission to write the document.")
         return self._docs.update_content(
             modified_by=modified_by,
             document_id=document_id,
@@ -89,6 +96,8 @@ class KnowledgeManager(IKnowledgeManager):
         )
 
     def delete(self, deleted_by: str, document_id: str) -> bool:
+        if not self._perms.has_permission(user_id=deleted_by, document_id=document_id, required="delete"):
+            raise PermissionError("User does not have permission to delete the document.")
         return self._docs.delete(deleted_by=deleted_by, document_id=document_id)
 
     def get_all_metadata(self) -> Dict[str, Dict[str, object]]:

@@ -1,6 +1,6 @@
 import requests
 import logging
-from login import test_login
+from backend.test.api.auth.login import test_login
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

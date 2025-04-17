@@ -18,3 +18,7 @@ class IPermissionManager(ABC):
     @abstractmethod
     def remove_permissions(self, removed_by: str, removed_to: str, document_id: str, permissions: List[str]) -> bool:
         pass
+
+    @abstractmethod
+    def get_docId_by_userId(self, user_id: str) -> List[str]:
+        pass

@@ -7,6 +7,12 @@ class PermissionManager(IPermissionManager):
     def __init__(self, management_dao: ManagementDAO):
         self._dao = management_dao
 
+    def get_docId_by_userId(self, user_id: str) -> List[str]:
+        user_permissions = self._dao.getPermissionsByUser(user_id)
+        doc_ids = list({permission.docId for permission in user_permissions})
+
+        return doc_ids
+
     def get_permissions(self, user_id: str, document_id: str) -> List[str]:
         try:
             permissions = self._dao.getPermissionsByUserDoc(user_id, document_id)

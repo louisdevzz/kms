@@ -8,8 +8,8 @@ BASE_URL = "http://localhost:8000"
 LOGIN_ENDPOINT = "/kms/auth/login"
 
 CREDENTIALS = {
-    "email": "test@example.com",
-    "password": "password"
+    "email": "vohuunhan1310@gmail.com",
+    "password": "1111111"
 }
 
 

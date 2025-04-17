@@ -22,7 +22,10 @@ class DocumentDAO(IDocumentDAO):
         if doc:
             doc["documentId"] = str(doc["_id"])
             del doc["_id"]
-            return Document(**doc)  # mongo_dict -> doc object
+            doc["file_size"] = doc["versions"][0]["file_size"]
+            doc.pop("versions", None)
+
+            return Document(**doc)
         return None
 
     def findByName(self, name: str) -> Optional[Document]:

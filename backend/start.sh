@@ -26,7 +26,7 @@ echo "Starting MinIO container..."
 docker compose -f backend/docker/docker-compose.minio.yml up -d
 
 # Wait for services to initialize
-echo "Waiting 5 seconds for services..."
+echo "Waiting 2 seconds for services..."
 sleep 2
 
 # Virtual environment setup

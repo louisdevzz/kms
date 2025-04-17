@@ -8,6 +8,7 @@ from backend.knowledge.document.idoc_manager import IDocumentManager
 class DocumentManager(IDocumentManager):
     def __init__(self, management_dao: ManagementDAO):
         self._dao = management_dao
+        self._permission_manager = PermissionManager(management_dao)
 
     def upload(self, content: BinaryIO, name: str, doc_type: str, department_id: str,
                tags: List[str], owner: str, category: str,
@@ -34,26 +35,14 @@ class DocumentManager(IDocumentManager):
             return []
 
     def get_metadata(self, document_id: str, user_id: str) -> Dict[str, object]:
-        # check permission before find document
-        if not PermissionManager.has_permission(user_id=user_id, document_id=document_id, required="read"):
-            raise PermissionError("User does not have permission to read the document.")
-
         doc = self._dao.findDocumentById(document_id)
-        return doc.model_dump(exclude={'versions'}) if doc else {}
+        return doc.model_dump() if doc else {}
 
     def get_content(self, document_id: str, user_id: str) -> Optional[BinaryIO]:
-        # check permission before find document
-        if not PermissionManager.has_permission(user_id=user_id, document_id=document_id, required="read"):
-            raise PermissionError("User does not have permission to read the document.")
-
         return self._dao.get_document_content(document_id)
 
     def update_metadata(self, modified_by: str, document_id: str, new_name: str, new_department_id: str, new_tags: List[str],
                         new_owner: str, new_category: List[str], new_description: str, new_university: str) -> bool:
-        # check permission before update metadata
-        if not PermissionManager.has_permission(user_id=modified_by, document_id=document_id, required="write"):
-            raise PermissionError("User does not have permission to write the document.")
-
         # find doc
         doc = self._dao.findDocumentById(document_id)
         if not doc:
@@ -70,10 +59,6 @@ class DocumentManager(IDocumentManager):
         return self._dao.updateMetaData(doc)
 
     def update_content(self, modified_by: str, document_id: str, new_content: BinaryIO) -> bool:
-        # check permission before update content
-        if not PermissionManager.has_permission(user_id=modified_by, document_id=document_id, required="write"):
-            raise PermissionError("User does not have permission to write the document.")
-
         # find doc
         doc = self._dao.findDocumentById(document_id)
 
@@ -87,10 +72,6 @@ class DocumentManager(IDocumentManager):
         return self._dao.update_content(modified_by, document_id, new_content, file_size)
 
     def delete(self, deleted_by: str, document_id: str) -> bool:
-        # check permission before delete document
-        if not PermissionManager.has_permission(user_id=deleted_by, document_id=document_id, required="delete"):
-            raise PermissionError("User does not have permission to delete the document.")
-
         return self._dao.deleteDocument(document_id)
 
     def get_all_metadata(self) -> Dict[str, Dict[str, object]]:
@@ -98,16 +79,12 @@ class DocumentManager(IDocumentManager):
         return {doc.documentId: doc.model_dump(exclude={'versions'}) for doc in docs}
 
     def get_all_versions(self, user_id: str, document_id: str) -> List[Version]:
-        # check permission before read document
-        if not PermissionManager.has_permission(user_id=user_id, document_id=document_id, required="read"):
-            raise PermissionError("User does not have permission to read the document.")
-
         doc = self._dao.findDocumentById(document_id)
         return doc.versions if doc else []
 
     def get_specific_version(self, user_id: str, document_id: str, version_number: int) -> Optional[Document]:
         # check permission before read document
-        if not PermissionManager.has_permission(user_id=user_id, document_id=document_id, required="read"):
+        if not self._permission_manager.has_permission(user_id=user_id, document_id=document_id, required="read"):
             raise PermissionError("User does not have permission to read the document.")
 
         # find doc
@@ -125,7 +102,7 @@ class DocumentManager(IDocumentManager):
 
     def restore_version(self, document_id: str, restored_by: str, version_number: int) -> bool:
         # check permission before read document
-        if not PermissionManager.has_permission(user_id=restored_by, document_id=document_id, required="write"):
+        if not self._permission_manager.has_permission(user_id=restored_by, document_id=document_id, required="write"):
             raise PermissionError("User does not have permission to restore the document.")
 
         # find doc

@@ -8,6 +8,8 @@ import jwt
 from datetime import datetime, timedelta
 from io import BytesIO
 from backend.api.iapi_router import IAPIRouter
+from fastapi.responses import StreamingResponse
+import zipfile
 
 
 logger = logging.getLogger(__name__)
@@ -204,34 +206,71 @@ class KMS_APIRouter(IAPIRouter):
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail="Document content not found or access denied"
                 )
-            return {'content': content}
 
+            file_content = content.read()
+            content.close()
+
+            return StreamingResponse(
+                BytesIO(file_content),
+                media_type="application/octet-stream",
+                headers={
+                    "Content-Disposition": f"attachment; filename={document_id}"
+                }
+            )
+
+        except PermissionError as pe:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=str(pe)
+            )
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e)
             )
+
     # get all document content
     async def get_all_documents_content(
-        self,
-        user_id: str = Query(...),
-        _: None = Depends(verify_token)
+            self,
+            user_id: str,
+            _: None = Depends(verify_token)
     ):
         try:
             contents = self.knowledge.get_all_content(user_id=user_id)
-
             if not contents:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
-                    detail="No document content found or access denied"
+                    detail="No accessible documents found"
                 )
 
-            return {"contents": [c.read() for c in contents]}  # or return as StreamingResponse if large
+            # Create in-memory ZIP file
+            zip_buffer = BytesIO()
+            with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
+                for i, content in enumerate(contents):
+                    try:
+                        # Read content and add to ZIP
+                        file_data = content.read()
+                        zip_file.writestr(f"document_{i}", file_data)
+                    finally:
+                        content.close()
 
+            # Return as streaming response
+            zip_buffer.seek(0)
+            return StreamingResponse(
+                zip_buffer,
+                media_type="application/zip",
+                headers={
+                    "Content-Disposition": "attachment; filename=documents.zip",
+                    "X-Document-Count": str(len(contents))
+                }
+            )
+
+        except HTTPException:
+            raise
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=str(e)
+                detail=f"Failed to package documents: {str(e)}"
             )
 
     # update document metadata
