@@ -7,10 +7,12 @@ import {
 } from '@/components/ui/sidebar'
 import { NavGroup } from '@/components/layout/nav-group'
 import { NavUser } from '@/components/layout/nav-user'
-import { sidebarData } from './data/sidebar-data'
+import { useSidebarData } from './data/sidebar-data'
 import { Command } from 'lucide-react'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const sidebarData = useSidebarData()
+
   return (
     <Sidebar collapsible='icon' variant='floating' {...props}>
       <SidebarHeader>

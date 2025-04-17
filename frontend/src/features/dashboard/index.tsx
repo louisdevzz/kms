@@ -14,8 +14,19 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { Overview } from './components/overview'
 import { RecentUploads } from './components/recent-uploads'
 import { IconFileUpload, IconUsers, IconDownload, IconClock } from '@tabler/icons-react'
+import { useQuery } from '@tanstack/react-query'
+import { fetchDocuments } from '@/lib/api'
 
 export default function Dashboard() {
+  const { data: documentIds, error } = useQuery({
+    queryKey: ['documentIds'],
+    queryFn: () => fetchDocuments(true)
+  })
+
+  if(error){
+    console.error('Error fetching documents:', error)
+  }
+
   return (
     <>
       {/* ===== Top Heading ===== */}
@@ -44,7 +55,7 @@ export default function Dashboard() {
                   <IconFileUpload className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className='text-2xl font-bold'>4</div>
+                  <div className='text-2xl font-bold'>{documentIds?.length || 0}</div>
                   <p className='text-xs text-muted-foreground'>
                     Your total uploaded files
                   </p>
@@ -108,7 +119,7 @@ export default function Dashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <RecentUploads />
+                  <RecentUploads documentIds={documentIds}/>
                 </CardContent>
               </Card>
             </div>

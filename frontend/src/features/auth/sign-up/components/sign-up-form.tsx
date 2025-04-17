@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { useNavigate } from '@tanstack/react-router'
 import axios from 'axios'
+import { useAuthStore } from '@/stores/authStore'
 
 type SignUpFormProps = HTMLAttributes<HTMLDivElement>
 
@@ -34,22 +35,23 @@ const formSchema = z
       .min(7, {
         message: 'Password must be at least 7 characters long',
       }),
-    department_id: z.string(),
-    roles: z.array(z.string()),
-    name: z.string()
+    name: z.string().min(1, { message: 'Please enter your name' }),
+    department_id: z.string().min(1, { message: 'Please enter your department' }),
+    roles: z.string().min(1, { message: 'Please enter at least one role' })
   })
 
 export function SignUpForm({ className, ...props }: SignUpFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const setAccessToken = useAuthStore((state) => state.auth.setAccessToken)
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
       password: '',
-      department_id:"aaaaa",
-      roles:["a"],
-      name:"a",
+      name: '',
+      department_id: '',
+      roles: '',
     },
   })
 
@@ -61,23 +63,38 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
       formData.append('password', data.password)
       formData.append('name', data.name)
       formData.append('department_id', data.department_id)
-      data.roles.forEach(role => {
+      // Split roles string into array and append each role
+      const rolesArray = data.roles.split(',').map(role => role.trim())
+      rolesArray.forEach(role => {
         formData.append('roles', role)
       })
 
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/kms/auth/signup`, formData, {
+      const signUpRes = await axios.post(`${import.meta.env.VITE_API_URL}/kms/auth/signup`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       })
 
-      if(res.status == 200){
-        navigate({to: "/sign-in"})
+      if(signUpRes.status == 200){
+        // After successful signup, automatically sign in
+        const loginFormData = new FormData()
+        loginFormData.append('email', data.email)
+        loginFormData.append('password', data.password)
+
+        const loginRes = await axios.post(`${import.meta.env.VITE_API_URL}/kms/auth/login`, loginFormData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+
+        if(loginRes.status == 200){
+          localStorage.setItem('email', data.email)
+          setAccessToken(loginRes.data.access_token)
+          navigate({to: "/"})
+        }
       }
-      // Handle successful signup here
     } catch (error) {
       console.error('Signup error:', error)
-      // Handle error here
     } finally {
       setIsLoading(false)
     }
@@ -121,7 +138,36 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
                 <FormItem className='space-y-1'>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input placeholder='Join' {...field} />
+                    <Input placeholder='John Doe' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='department_id'
+              render={({ field }) => (
+                <FormItem className='space-y-1'>
+                  <FormLabel>Department</FormLabel>
+                  <FormControl>
+                    <Input placeholder='IT' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='roles'
+              render={({ field }) => (
+                <FormItem className='space-y-1'>
+                  <FormLabel>Roles (comma-separated)</FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder='Admin, User, Manager' 
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

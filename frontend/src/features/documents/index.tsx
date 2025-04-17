@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   IconAdjustmentsHorizontal,
   IconSortAscendingLetters,
@@ -23,34 +23,72 @@ import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { PDFViewerDialog } from '@/components/pdf-viewer-dialog'
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
-interface User {
-  email: string
-  name: string
-  roles: string[]
-  department_id: string,
-  userId: string,
+import { fetchDocuments, fetchDocumentMetadata, fetchDocumentContent } from '@/lib/api'
+
+interface DocumentCardProps{
+  documentId: string;
 }
 
-const DocumentCard = ({ document }: { document: any }) => {
+const DocumentCard = ({ documentId }: DocumentCardProps) => {
   const [isViewerOpen, setIsViewerOpen] = useState(false)
-  const handleView = async () => {
+  const [pdfUrl, setPdfUrl] = useState<string>('')
+
+  const { data: metadataDoc, isLoading: isLoadingMetadata } = useQuery({
+    queryKey: ['metadataDoc', documentId],
+    queryFn: () => fetchDocumentMetadata(documentId)
+  })
+
+  const { data: document, isLoading: isLoadingDocument } = useQuery({
+    queryKey: ['document', documentId],
+    queryFn: () => fetchDocumentContent(documentId)
+  })
+
+  const getPdfDataUrl = () => {
     try {
-      // console.log('document', document)
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/knowledge/documents/download?document_name=${document.name}`,
-        { responseType: 'blob' }
-      )
-      const url = URL.createObjectURL(response.data)
-      // console.log('url', url)
-      setDocumentUrl(url)
-      setIsViewerOpen(true)
+      if (!document) {
+        return '';
+      }
+
+      if (document instanceof ArrayBuffer) {
+        const blob = new Blob([document], { type: 'application/pdf' });
+        return URL.createObjectURL(blob);
+      }
+
+      return '';
     } catch (error) {
-      console.error('Error fetching document:', error)
+      console.error('Error processing PDF data:', error);
+      return '';
     }
   }
 
-  const [documentUrl, setDocumentUrl] = useState<string>('')
+  useEffect(() => {
+    if (document) {
+      const url = getPdfDataUrl();
+      setPdfUrl(url);
+    }
+    
+    return () => {
+      if (pdfUrl && pdfUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(pdfUrl);
+      }
+    };
+  }, [document]);
+
+  const handleView = () => {
+    setIsViewerOpen(true)
+  }
+
+  if (isLoadingMetadata || isLoadingDocument) {
+    return (
+      <div className="rounded-lg border p-4">
+        <div className="animate-pulse">
+          <div className="h-10 w-10 rounded-lg bg-muted mb-4" />
+          <div className="h-4 w-3/4 bg-muted rounded mb-2" />
+          <div className="h-4 w-1/2 bg-muted rounded" />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <>
@@ -70,64 +108,28 @@ const DocumentCard = ({ document }: { document: any }) => {
           </Button>
         </div>
         <div>
-          <h2 className="mb-1 font-semibold">{document.name}</h2>
-          <p className="line-clamp-2 text-gray-500">{document.description || 'No description available'}</p>
+          <h2 className="mb-1 font-semibold">{metadataDoc?.name}</h2>
+          <p className="line-clamp-2 text-gray-500">{metadataDoc?.description || 'No description available'}</p>
         </div>
       </div>
 
       <PDFViewerDialog
         open={isViewerOpen}
         onOpenChange={setIsViewerOpen}
-        documentUrl={documentUrl}
-        title={document.name}
+        documentUrl={pdfUrl}
+        title={metadataDoc?.name}
       />
     </>
   )
 }
 
-export default function Apps() {
+export default function Documents() {
   const [sort, setSort] = useState('ascending')
   const [searchTerm, setSearchTerm] = useState('')
 
-
-
-  const getCurrentUser = async (): Promise<User> => {
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}/kms/auth/me`,{
-      headers:{
-        "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2b2h1dW5oYW4xMzEwQGdtYWlsLmNvbSIsImV4cCI6MTc0NDgwNzM2MH0.CEK3FMP7EjmAAygxe_EHr_4yBRXQFW7vANShjgW6u8c`,
-        "Accept": "application/json"
-      }
-    })
-    return response.data
-  }
-
-  const {data: user} = useQuery({
-    queryKey: ['currentUser'],
-    queryFn: getCurrentUser,
-  })
-
-  console.log(user)
-
-  const userId = user?.email
-  console.log("userid",userId)
-
-  const fetchDocuments = async () => {
-    if (!userId) {
-      throw new Error('User ID is required to fetch documents')
-    }
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}/kms/document/content?user_id=${userId}`,{
-      headers:{
-        "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2b2h1dW5oYW4xMzEwQGdtYWlsLmNvbSIsImV4cCI6MTc0NDgwNzM2MH0.CEK3FMP7EjmAAygxe_EHr_4yBRXQFW7vANShjgW6u8c`,
-        "Accept": "application/json"
-      }
-    })
-    return response.data
-  }
-
-  const { data: documents, error } = useQuery({
-    queryKey: ['documents'],
-    queryFn: () => fetchDocuments(),
-    enabled: !!userId, // Only run the query if userId exists
+  const { data: documentIds, error } = useQuery({
+    queryKey: ['documentIds'],
+    queryFn: () => fetchDocuments(true)
   })
 
   if (error) {
@@ -150,7 +152,8 @@ export default function Apps() {
     )
   }
 
-  console.log(documents)
+  // console.log('documentIds',documentIds)
+
 
 
   return (
@@ -209,9 +212,14 @@ export default function Apps() {
         </div>
         <Separator className='shadow' />
         <ul className='faded-bottom no-scrollbar grid gap-4 overflow-auto pb-16 pt-4 md:grid-cols-2 lg:grid-cols-3'>
-          {documents?.user?.map((app: any,index: number) => (
-            <DocumentCard key={index} document={app} />
-          ))}
+          {documentIds?.length > 0 &&
+            documentIds.map((documentId: string) => (
+              <DocumentCard
+                key={documentId}
+                documentId={documentId}
+              />
+            ))
+          }
         </ul>
       </Main>
     </>

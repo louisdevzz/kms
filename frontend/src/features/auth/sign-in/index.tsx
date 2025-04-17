@@ -31,6 +31,15 @@ export default function SignIn() {
           </a>
           .
         </p>
+        <p className='mt-4 text-center text-sm text-muted-foreground'>
+          Don't have an account?{' '}
+          <a
+            href='/sign-up'
+            className='font-medium text-primary underline underline-offset-4 hover:text-primary/90'
+          >
+            Sign up
+          </a>
+        </p>
       </Card>
     </AuthLayout>
   )

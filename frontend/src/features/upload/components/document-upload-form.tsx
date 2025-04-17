@@ -24,6 +24,9 @@ import {
 } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { X } from 'lucide-react'
+import { useAuthStore } from '@/stores/authStore'
+import { uploadDocument } from '@/lib/api'
+
 
 const categories: { label: string; value: Category }[] = [
   { label: 'Thông tin khoa công nghệ thông tin', value: 'thong_tin_khoa_cong_nghe_thong_tin' },
@@ -38,22 +41,47 @@ const categories: { label: string; value: Category }[] = [
   { label: 'Thông tin chi phí', value: 'thong_tin_chi_phi' },
 ]
 
+const tags: { label: string; value: string }[] = [
+  { label: 'Báo cáo nghiên cứu', value: 'bao_cao_nghien_cuu' },
+  { label: 'Tài liệu kỹ thuật', value: 'tai_lieu_ky_thuat' },
+  { label: 'Báo cáo tổng hợp', value: 'bao_cao_tong_hop' },
+  { label: 'Bài thuyết trình', value: 'bai_thuyet_trinh' },
+  { label: 'Hướng dẫn sử dụng', value: 'huong_dan_su_dung' },
+  { label: 'Quy định chính sách', value: 'quy_dinh_chinh_sach' },
+  { label: 'Quy trình nghiệp vụ', value: 'quy_trinh_nghiep_vu' },
+  { label: 'Biên bản họp', value: 'bien_ban_hop' },
+  { label: 'Phân tích dữ liệu', value: 'phan_tich_du_lieu' },
+  { label: 'Tài liệu dự án', value: 'tai_lieu_du_an' },
+  { label: 'Tài liệu đào tạo', value: 'tai_lieu_dao_tao' },
+  { label: 'Mẫu tài liệu', value: 'mau_tai_lieu' },
+  { label: 'Tài liệu tham khảo', value: 'tai_lieu_tham_khao' },
+  { label: 'Quy trình chuẩn', value: 'quy_trinh_chuan' },
+  { label: 'Kinh nghiệm thực tiễn', value: 'kinh_nghiem_thuc_tien' }
+]
+
 export function DocumentUploadForm() {
   const [preview, setPreview] = useState<string | null>(null)
-  const [selectedCategories, setSelectedCategories] = useState<Category[]>([])
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [nameFile, setNameFile] = useState<string|null>(null)
+  const [type, setType] = useState<string|null>(null)
+  const {auth} = useAuthStore()
+
+  const owner = auth.user?.email ?? '';
 
   const form = useForm<DocumentForm>({
     resolver: zodResolver(documentSchema),
     defaultValues: {
       document: undefined,
-      name:'a',
-      doc_type:'pdf',
-      owner: 'vohuunhan1310@gmail.com',
-      tags:['a'],
-      category: [],
+      name: '',
+      doc_type: '',
+      owner: owner,
+      tags:[],
+      category: '',
       department_id: '',
       description: '',
-      university: ''
+      university: '',
+      additional: ''
     },
   })
 
@@ -64,42 +92,30 @@ export function DocumentUploadForm() {
       if (data.document && data.document[0]) {
         formData.append('document', data.document[0])
       }
-      formData.append('name', data.name)
-      formData.append('doc_type', data.doc_type)
-      formData.append('owner', data.owner)
+      formData.append('name', nameFile?.replace(/\.(pdf|txt|doc)$/, '') ?? 'Untitled')
+      formData.append('doc_type', type?.replace('application/','') ?? 'pdf')
+      formData.append('owner', owner)
       formData.append('department_id', data.department_id)
       formData.append('description', data.description)
       formData.append('university', data.university)
 
       // Append tags as individual items
       data.tags.forEach((tag) => {
-        formData.append('tags[]', tag)
+        formData.append('tags', tag)
       })
       
       // Append each category individually
-      data.category.forEach((category) => {
-        formData.append('category[]', category)
-      })
+      formData.append('category',data.category)
+      formData.append('additional',data.additional)
 
-      console.log('FormData contents:')
-      for (const [key, value] of formData.entries()) {
-        console.log(`${key}:  ${(value)}`)
-      }
+      // console.log('FormData contents:')
+      // for (const [key, value] of formData.entries()) {
+      //   console.log(`${key}:  ${(value)}`)
+      // }
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/kms/document?self=true`, {
-        headers:{
-          "Authorization": `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ2b2h1dW5oYW4xMzEwQGdtYWlsLmNvbSIsImV4cCI6MTc0NDgwNzM2MH0.CEK3FMP7EjmAAygxe_EHr_4yBRXQFW7vANShjgW6u8c`,
-          "Accept": "application/json"
-        },
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.detail || 'Failed to upload document')
-      }
-      console.log(await response.json())
+      // Use the API function instead of direct fetch
+      await uploadDocument(formData, true)
+      // console.log(response)
 
       toast({
         title: 'Success',
@@ -107,7 +123,8 @@ export function DocumentUploadForm() {
       })
       form.reset()
       setPreview(null)
-      setSelectedCategories([])
+      setSelectedCategory(null)
+      setSelectedTags([])
     } catch (error) {
       toast({
         title: 'Error',
@@ -121,6 +138,8 @@ export function DocumentUploadForm() {
     const file = e.target.files?.[0]
     if (file) {
       const reader = new FileReader()
+      setNameFile(file.name)
+      setType(file.type)
       reader.onloadend = () => {
         setPreview(reader.result as string)
       }
@@ -129,17 +148,22 @@ export function DocumentUploadForm() {
   }
 
   const handleCategorySelect = (value: Category) => {
-    if (!selectedCategories.includes(value)) {
-      const newCategories = [...selectedCategories, value]
-      setSelectedCategories(newCategories)
-      form.setValue('category', newCategories)
+    setSelectedCategory(value)
+    form.setValue('category', value)
+  }
+
+  const handleTagSelect = (value: string) => {
+    if (!selectedTags.includes(value)) {
+      const newTags = [...selectedTags, value]
+      setSelectedTags(newTags)
+      form.setValue('tags', newTags)
     }
   }
 
-  const removeCategory = (value: Category) => {
-    const newCategories = selectedCategories.filter((cat) => cat !== value)
-    setSelectedCategories(newCategories)
-    form.setValue('category', newCategories)
+  const removeTag = (value: string) => {
+    const newTags = selectedTags.filter((tag) => tag !== value)
+    setSelectedTags(newTags)
+    form.setValue('tags', newTags)
   }
 
   return (
@@ -174,66 +198,28 @@ export function DocumentUploadForm() {
 
               <FormField
                 control={form.control}
-                name="owner"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Owner</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
                 name="category"
                 render={() => (
                   <FormItem>
-                    <FormLabel>Categories</FormLabel>
+                    <FormLabel>Category</FormLabel>
                     <div className="space-y-2">
-                      <Select onValueChange={handleCategorySelect}>
+                      <Select onValueChange={handleCategorySelect} value={selectedCategory || undefined}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select categories" />
+                            <SelectValue placeholder="Select category" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           {categories.map((category) => (
                             <SelectItem
                               key={category.value}
-                              value={category.value}
-                              disabled={selectedCategories.includes(category.value)}
+                              value={category.label}
                             >
                               {category.label}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedCategories.map((category) => {
-                          const categoryLabel = categories.find(
-                            (c) => c.value === category
-                          )?.label
-                          return (
-                            <Badge
-                              key={category}
-                              variant="secondary"
-                              className="flex items-center gap-1"
-                            >
-                              {categoryLabel}
-                              <button
-                                type="button"
-                                onClick={() => removeCategory(category)}
-                                className="ml-1 rounded-full hover:bg-muted"
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
-                            </Badge>
-                          )
-                        })}
-                      </div>
                     </div>
                     <FormMessage />
                   </FormItem>
@@ -282,6 +268,74 @@ export function DocumentUploadForm() {
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="additional"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Additional</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="tags"
+                render={() => (
+                  <FormItem>
+                    <FormLabel>Tags</FormLabel>
+                    <div className="space-y-2">
+                      <Select onValueChange={handleTagSelect}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select tags" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {tags.map((tag) => (
+                            <SelectItem
+                              key={tag.value}
+                              value={tag.label}
+                              disabled={selectedTags.includes(tag.value)}
+                            >
+                              {tag.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedTags.map((tagValue) => {
+                          const tagLabel = tags.find(
+                            (t) => t.label === tagValue
+                          )?.label
+                          return (
+                            <Badge
+                              key={tagValue}
+                              variant="secondary"
+                              className="flex items-center gap-1"
+                            >
+                              {tagLabel}
+                              <button
+                                type="button"
+                                onClick={() => removeTag(tagValue)}
+                                className="ml-1 rounded-full hover:bg-muted"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            </Badge>
+                          )
+                        })}
+                      </div>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <Button type="submit" className="w-full">
                 Upload Document
               </Button>
@@ -296,7 +350,7 @@ export function DocumentUploadForm() {
         </CardHeader>
         <CardContent>
           {preview ? (
-            <div className="aspect-video w-full overflow-hidden rounded-lg border">
+            <div className="aspect-video w-full h-[600px] overflow-hidden rounded-lg border">
               <iframe
                 src={preview}
                 className="h-full w-full"

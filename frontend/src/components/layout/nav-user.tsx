@@ -15,7 +15,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
-import { clearAuth } from '@/lib/auth'
+import { useAuthStore } from '@/stores/authStore'
 
 export function NavUser({
   user,
@@ -31,7 +31,7 @@ export function NavUser({
   const navigate = useNavigate()
 
   const handleLogout = () => {
-    clearAuth()
+    useAuthStore().auth.reset
     navigate({ to: '/sign-in' })
   }
 

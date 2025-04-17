@@ -37,11 +37,12 @@ export const documentSchema = z.object({
   name: z.string(),
   doc_type: z.string(),
   owner: z.string().min(1, 'Owner is required'),
-  category: z.array(categoryEnum).min(1, 'At least one category is required'),
+  category: z.string().min(1, 'At least one category is required'),
   tags:z.array(z.string()),
   department_id: z.string().min(1, 'Department is required'),
   description: z.string().min(1, 'Description is required'),
   university: z.string().min(1, 'University is required'),
+  additional: z.string()
 })
 
 export type DocumentForm = z.infer<typeof documentSchema>

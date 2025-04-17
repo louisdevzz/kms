@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from '@tanstack/react-router'
 import { IconBrandGoogle } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
-import { setAuth } from '@/lib/auth'
+import { useAuthStore } from '@/stores/authStore'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -39,6 +39,7 @@ const formSchema = z.object({
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const setAccessToken = useAuthStore((state) => state.auth.setAccessToken)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,17 +52,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
       setIsLoading(true)
-      // console.log('Form data:', data)
       
       const formData = new FormData()
       formData.append('email', data.email)
       formData.append('password', data.password)
-
-      // Log the actual contents of FormData
-      console.log('FormData contents:')
-      for (const [key, value] of formData.entries()) {
-        console.log(`${key}:  ${typeof(value)}`)
-      }
 
       const res = await axios.post(`${import.meta.env.VITE_API_URL}/kms/auth/login`, formData, {
         headers: {
@@ -69,17 +63,13 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         },
       })
 
-      console.log(res)
-
       if(res.status == 200){
-        console.log("login successfully")
-        setAuth(res.data.access_token)
+        localStorage.setItem('email', data.email)
+        setAccessToken(res.data.access_token)
         navigate({to: "/"})
       }
-      // Handle successful signup here
     } catch (error) {
-      console.error('Signup error:', error)
-      // Handle error here
+      console.error('Sign In error:', error)
     } finally {
       setIsLoading(false)
     }

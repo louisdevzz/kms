@@ -5,8 +5,10 @@ import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import { Toaster } from '@/components/ui/toaster'
 import GeneralError from '@/features/errors/general-error'
 import NotFoundError from '@/features/errors/not-found-error'
-import { checkAuth } from '@/lib/auth'
 import { Analytics } from "@vercel/analytics/react"
+import Cookies from 'js-cookie'
+
+const ACCESS_TOKEN = import.meta.env.VITE_ACCESS_TOKEN
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
@@ -34,10 +36,10 @@ export const Route = createRootRouteWithContext<{
       return
     }
 
-    // Check if user is authenticated
-    const isAuthenticated = checkAuth()
+    // Check if user is authenticated by checking cookies
+    const accessToken = Cookies.get(ACCESS_TOKEN||'')
     
-    if (!isAuthenticated) {
+    if (!accessToken) {
       throw redirect({
         to: '/sign-in'
       })
