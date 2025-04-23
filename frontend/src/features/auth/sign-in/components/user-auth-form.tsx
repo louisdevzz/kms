@@ -57,8 +57,10 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       formData.append('email', data.email)
       formData.append('password', data.password)
 
-      const apiUrl = new URL('/kms/auth/login', import.meta.env.VITE_API_URL || 'https://kms-production-958c.up.railway.app')
-      const res = await axios.post(apiUrl.toString(), formData, {
+      const baseUrl = import.meta.env.VITE_API_URL || 'https://kms-production-958c.up.railway.app'
+      const apiUrl = `${baseUrl}/kms/auth/login`
+
+      const res = await axios.post(apiUrl, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
