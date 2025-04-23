@@ -167,12 +167,7 @@ class KMS_APIRouter(IAPIRouter):
     # get current user
     async def get_current_user(self, credentials: HTTPAuthorizationCredentials = Depends(security)):
         try:
-            payload = self.decode_token(credentials.credentials)
-            email: str = payload.get("sub")
-            if email is None:
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-
-            user = self.knowledge.get_user_by_email(email)
+            user = self.get_user_from_token(credentials)
             if not user:
                 raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
@@ -187,13 +182,7 @@ class KMS_APIRouter(IAPIRouter):
         credentials: HTTPAuthorizationCredentials = Depends(security)
     ):
         try:
-            payload = self.decode_token(credentials.credentials)
-            email: str = payload.get("sub")
-            if email is None:
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-
-            current_user = self.knowledge.get_user_by_email(email)
-
+            current_user = self.get_user_from_token(credentials)
             metadata = self.knowledge.get_doc_by_name(
                 name=name,
                 user_id=current_user.userId
@@ -217,13 +206,7 @@ class KMS_APIRouter(IAPIRouter):
         credentials: HTTPAuthorizationCredentials = Depends(security)
     ):
         try:
-            payload = self.decode_token(credentials.credentials)
-            email: str = payload.get("sub")
-            if email is None:
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-
-            current_user = self.knowledge.get_user_by_email(email)
-
+            current_user = self.get_user_from_token(credentials)
             metadata = self.knowledge.get_metadata(
                 document_id=document_id,
                 user_id=current_user.userId
@@ -247,13 +230,7 @@ class KMS_APIRouter(IAPIRouter):
             credentials: HTTPAuthorizationCredentials = Depends(security)
     ):
         try:
-            payload = self.decode_token(credentials.credentials)
-            email: str = payload.get("sub")
-            if email is None:
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-
-            current_user = self.knowledge.get_user_by_email(email)
-
+            current_user = self.get_user_from_token(credentials)
             content = self.knowledge.get_content(
                 document_id=document_id,
                 user_id=current_user.userId
@@ -292,13 +269,7 @@ class KMS_APIRouter(IAPIRouter):
             credentials: HTTPAuthorizationCredentials = Depends(security)
     ):
         try:
-            payload = self.decode_token(credentials.credentials)
-            email: str = payload.get("sub")
-            if email is None:
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-
-            current_user = self.knowledge.get_user_by_email(email)
-
+            current_user = self.get_user_from_token(credentials)
             doc_ids = self.knowledge.get_doc_ids(user_id=current_user.userId)
 
             if not doc_ids:
@@ -400,13 +371,7 @@ class KMS_APIRouter(IAPIRouter):
             credentials: HTTPAuthorizationCredentials = Depends(security)
     ):
         try:
-            payload = self.decode_token(credentials.credentials)
-            email: str = payload.get("sub")
-            if email is None:
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-
-            current_user = self.knowledge.get_user_by_email(email)
-
+            current_user = self.get_user_from_token(credentials)
             success = self.knowledge.delete(
                 deleted_by=current_user.userId,
                 document_id=document_id
@@ -516,15 +481,9 @@ class KMS_APIRouter(IAPIRouter):
             credentials: HTTPAuthorizationCredentials = Depends(security)
     ):
         try:
-            payload = self.decode_token(credentials.credentials)
-            email: str = payload.get("sub")
-            if email is None:
-                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-
-            current_user = self.knowledge.get_user_by_email(email)
-
+            current_user = self.get_user_from_token(credentials)
             success = self.knowledge.share_permissions(
-                shared_by=shared_by,
+                shared_by=current_user.userId,
                 shared_to=shared_to,
                 document_id=document_id,
                 permissions=permissions
