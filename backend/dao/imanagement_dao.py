@@ -53,7 +53,7 @@ class IManagementDAO(ABC):
     def update_content(self, modified_by: str, document_id: str, content: BinaryIO, size: int) -> bool: pass
 
     @abstractmethod
-    def deleteDocument(self, document_id: str) -> bool: pass
+    def deleteDocument(self, user_id: str, document_id: str) -> bool: pass
 
     @abstractmethod
     def addVersion(self, document_id: str, version: Version) -> bool: pass

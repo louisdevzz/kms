@@ -84,7 +84,6 @@ class IAPIRouter(ABC):
     @abstractmethod
     async def delete_document(
             self,
-            deleted_by: str,
             document_id: str,
             credentials: HTTPAuthorizationCredentials
     ) -> dict: pass
@@ -118,7 +117,6 @@ class IAPIRouter(ABC):
     @abstractmethod
     async def share_document_permission(
             self,
-            shared_by: str,
             shared_to: str,
             document_id: str,
             permissions: List[str],

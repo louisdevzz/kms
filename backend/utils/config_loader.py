@@ -6,9 +6,19 @@ load_dotenv()
 
 
 def get_db_config() -> Dict[str, str]:
+    username = os.getenv("MONGODB_USERNAME")
+    password = os.getenv("MONGODB_PASSWORD")
+    cluster = os.getenv("MONGODB_CLUSTER")
+    db_name = os.getenv("MONGODB_DB_NAME")
+
+    from urllib.parse import quote_plus
+    encoded_password = quote_plus(password) if password else ""
+
+    uri = f"mongodb+srv://{username}:{encoded_password}@{cluster}/"
+
     return {
-        "uri": os.getenv("MONGODB_URI"),
-        "db_name": os.getenv("MONGODB_DB_NAME")
+        "uri": uri,
+        "db_name": db_name
     }
 
 

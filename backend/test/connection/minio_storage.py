@@ -1,16 +1,16 @@
 from minio import Minio
 from minio.error import S3Error
-import os
 from dotenv import load_dotenv
+from backend.utils.config_loader import get_storage_config
 
 load_dotenv()
 
-endpoint = os.getenv("MINIO_ENDPOINT")
-access_key = os.getenv("MINIO_ACCESS_KEY")
-secret_key = os.getenv("MINIO_SECRET_KEY")
-secure = os.getenv("MINIO_SECURE", "false").lower() in ("true", "1", "t")
+config = get_storage_config()
+endpoint = config['endpoint']
+access_key = config['access_key']
+secret_key = config['secret_key']
+secure = config['secure']
 
-# Initialize MinIO client
 client = Minio(
     endpoint=endpoint,
     access_key=access_key,

@@ -1,15 +1,52 @@
 import requests
 import logging
-from backend.test.api.auth.login import test_login
+import pytest
 
-logging.basicConfig(level=logging.INFO)
+# Configure logging
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+if not logger.handlers:
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    logger.addHandler(ch)
 
+# API Configuration
 BASE_URL = "http://localhost:8000"
+LOGIN_ENDPOINT = "/kms/auth/login"
 PROTECTED_ENDPOINT = "/kms/auth/me"
 
+# Test credentials
+CREDENTIALS = {
+    "email": "test@example.com",
+    "password": "password"
+}
 
-def test_protected(token):
+
+@pytest.fixture
+def token():
+    """Pytest fixture to get authentication token"""
+    try:
+        data = {k: (None, v) for k, v in CREDENTIALS.items()}
+        response = requests.post(
+            f"{BASE_URL}{LOGIN_ENDPOINT}",
+            files=data
+        )
+
+        if response.status_code == 200:
+            token = response.json().get("access_token")
+            logger.info("\n✅ Login successful (fixture)")
+            return token
+        else:
+            logger.error(f"❌ Login failed: {response.status_code}")
+            pytest.fail("Login failed")
+
+    except Exception as e:
+        logger.error(f"🚨 Login exception: {str(e)}")
+        pytest.fail(f"Login exception: {str(e)}")
+
+
+def test_protected_endpoint(token):
+    """Test accessing protected endpoint with valid token"""
     try:
         headers = {"Authorization": f"Bearer {token}"}
         response = requests.get(
@@ -17,30 +54,18 @@ def test_protected(token):
             headers=headers
         )
 
-        if response.status_code == 200:
-            logger.info("✅ Protected endpoint access successful!")
-            logger.info(f"User data: {response.json()}")
-            return True
-        else:
-            logger.error(f"❌ Failed to access protected endpoint: {response.status_code}")
-            logger.error(f"Response: {response.text}")
-            return False
+        assert response.status_code == 200, f"Expected 200, got {response.status_code}"
+        logger.info("\n✅ Protected endpoint access successful")
+        logger.info(f"User: {response.json()}")
 
     except Exception as e:
-        logger.error(f"🚨 Exception during protected endpoint test: {str(e)}")
-        return False
+        logger.error(f"🚨 Protected endpoint exception: {str(e)}")
+        pytest.fail(f"Protected endpoint exception: {str(e)}")
 
 
 if __name__ == "__main__":
-    logger.info("Starting protected endpoint test...")
 
     # login first
-    token = test_login()
+    token = token()
 
-    if token:
-        if test_protected(token):
-            logger.info("Test completed successfully!")
-        else:
-            logger.error("Failed to access protected endpoint")
-    else:
-        logger.error("Cannot test protected endpoint without valid token")
+    test_protected_endpoint(token)

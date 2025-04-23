@@ -50,7 +50,7 @@ class DocumentDAO(IDocumentDAO):
         )
         return result.modified_count > 0
 
-    def delete(self, documentId: str) -> bool:
+    def delete(self, documentId: str, session=None) -> bool:
         result = self.collection.delete_one({"_id": ObjectId(documentId)})
         return result.deleted_count > 0
 

@@ -11,7 +11,7 @@ class IPermissionDAO(ABC):
     def findByUser(self, userId: str) -> List[Permission]: pass
 
     @abstractmethod
-    def findByDoc(self, docId: str) -> List[Permission]: pass
+    def findByDoc(self, docId: str, session=None) -> List[Permission]: pass
 
     @abstractmethod
     def findByUserDoc(self, userId: str, docId: str) -> Optional[Permission]: pass
@@ -23,4 +23,4 @@ class IPermissionDAO(ABC):
     def update(self, permission: Permission) -> bool: pass
 
     @abstractmethod
-    def delete(self, permissionId: str) -> bool: pass
+    def delete(self, permissionId: str, session=None) -> bool: pass

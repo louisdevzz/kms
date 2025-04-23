@@ -1,8 +1,8 @@
 import requests
 
-document_id = "68073d697fe0de018f4d3f3c"
+name = "Test Text Document"
 
-url = f"http://localhost:8000/kms/document/{document_id}/content?self=true"
+url = f"http://localhost:8000/kms/document/search?name={name}"
 
 
 headers = {
@@ -11,5 +11,7 @@ headers = {
 
 response = requests.get(url, headers=headers)
 
-print("Status Code:", response.status_code)
-
+if response.status_code == 200:
+    print(response.json())
+else:
+    print("Error:", response.json())

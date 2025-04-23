@@ -1,15 +1,19 @@
 import requests
 import logging
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+if not logger.handlers:
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    logger.addHandler(ch)
 
 BASE_URL = "http://localhost:8000"
 LOGIN_ENDPOINT = "/kms/auth/login"
 
 CREDENTIALS = {
-    "email": "vohuunhan1310@gmail.com",
-    "password": "1111111"
+    "email": "test@example.com",
+    "password": "password"
 }
 
 
@@ -23,7 +27,7 @@ def test_login():
         )
 
         if response.status_code == 200:
-            logger.info("✅ Login successful!")
+            logger.info("\n✅ Login successful!")
             token = response.json().get("access_token")
             logger.info(f"Token: {token}")
             return token

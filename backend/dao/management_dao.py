@@ -1,5 +1,6 @@
 from typing import List, Optional, BinaryIO
 from pymongo import MongoClient
+from pymongo.errors import PyMongoError
 from backend.dao.user_module.user import User
 from backend.dao.user_module.user_dao import UserDAO
 from backend.dao.document_module.document import Document, Version
@@ -14,6 +15,7 @@ from backend.dao.minio_module.storage import MinIOStorage
 from datetime import timedelta
 from backend.utils.config_loader import get_storage_config, get_collections, get_db_config
 from backend.dao.imanagement_dao import IManagementDAO
+
 
 
 class ManagementDAO(IManagementDAO):
@@ -167,8 +169,40 @@ class ManagementDAO(IManagementDAO):
         object_name = f"{document_id}/v{document.currentNumber}"
         return self._minio_storage.addDoc(object_name, content, size)
 
-    def deleteDocument(self, document_id: str) -> bool:
-        return self.document_dao.delete(document_id)
+    def deleteDocument(self, user_id: str, document_id: str) -> bool:
+        document = self.findDocumentById(document_id)
+        if not document:
+            return False
+        object_name = f"{document_id}/v{document.currentNumber}"
+        try:
+            # start a transaction session
+            with self.mongo_client.start_session() as session:
+                with session.start_transaction():
+                    # delete associated permissions
+                    permissions = self.permission_dao.findByDoc(docId=document_id, session=session)
+                    for permission in permissions:
+                        if not self.permission_dao.delete(permission.permissionId, session=session):
+                            raise Exception(f"Failed to delete permission {permission.permissionId}")
+                    # delete doc meta
+                    if not self.document_dao.delete(documentId=document_id, session=session):
+                        raise Exception(f"Failed to delete document {document_id}")
+                    # log
+                    activity_log = ActivityLog(
+                        userId=user_id,
+                        docId=document.documentId,
+                        action="delete document",
+                        description=f"Document {document.name} was deleted by {document.owner}",
+                    )
+                    if not self.activity_log_dao.save(activity_log, session=session):
+                        raise Exception("Failed to log activity")
+                    # delete content
+                    if not self._minio_storage.deleteDoc(object_name=object_name):
+                        raise Exception(f"Failed to delete document content: {object_name}")
+            return True
+        except PyMongoError as e:
+            return False
+        except Exception as e:
+            return False
 
     def addVersion(self, document_id: str, version: Version) -> bool:
         return self.document_dao.addVersion(document_id, version)

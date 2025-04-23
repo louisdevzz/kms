@@ -1,6 +1,7 @@
 from typing import List
 from backend.dao.management_dao import ManagementDAO
 from backend.knowledge.permission.iper_manager import IPermissionManager
+from backend.dao.permission_module.permission import Permission
 
 
 class PermissionManager(IPermissionManager):
@@ -10,8 +11,14 @@ class PermissionManager(IPermissionManager):
     def get_docId_by_userId(self, user_id: str) -> List[str]:
         user_permissions = self._dao.getPermissionsByUser(user_id)
         doc_ids = list({permission.docId for permission in user_permissions})
-
         return doc_ids
+
+    def get_permissions_by_user(self, user_id: str) -> List[Permission]:
+        try:
+            permissions = self._dao.getPermissionsByUser(user_id=user_id)
+            return permissions
+        except Exception:
+            return []
 
     def get_permissions(self, user_id: str, document_id: str) -> List[str]:
         try:

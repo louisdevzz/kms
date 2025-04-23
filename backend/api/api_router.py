@@ -29,22 +29,29 @@ class KMS_APIRouter(IAPIRouter):
         self._register_routes()
 
     def _register_routes(self):
-        # auth
+        # auth routes
         self.router.post("/kms/auth/signup")(self.sign_up)
         self.router.post("/kms/auth/login")(self.login)
-        self.router.post("/kms/document")(self.upload_document)
         self.router.get("/kms/auth/me")(self.get_current_user)
-        # doc
+
+        # doc routes
+        self.router.post("/kms/document")(self.upload_document)
         self.router.get("/kms/document/ids")(self.get_doc_ids)
+        self.router.get('/kms/document/search')(self.search_doc_by_name)
+
+        # specific doc routes
         self.router.get("/kms/document/{document_id}")(self.get_document_meta)
         self.router.get("/kms/document/{document_id}/content")(self.get_document_content)
-
         self.router.put("/kms/document/{document_id}")(self.update_document_meta)
         self.router.put("/kms/document/{document_id}/content")(self.update_document_content)
         self.router.delete("/kms/document/{document_id}")(self.delete_document)
+
+        # versioning routes
         self.router.get("/kms/document/{document_id}/versions")(self.get_document_versions)
         self.router.get("/kms/document/{document_id}/versions/{version_id}")(self.get_specific_document_version)
         self.router.post("/kms/document/{document_id}/versions/{version_id}")(self.restore_document_version)
+
+        # permission routes
         self.router.post("/kms/document/permission")(self.share_document_permission)
         self.router.delete("/kms/document/permission")(self.remove_document_permission)
 
@@ -58,6 +65,15 @@ class KMS_APIRouter(IAPIRouter):
     @staticmethod
     def decode_token(token: str):
         return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+    def get_user_from_token(self, credentials):
+        payload = self.decode_token(credentials.credentials)
+        email: str = payload.get("sub")
+        if email is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+        current_user = self.knowledge.get_user_by_email(email)
+        return current_user
 
     async def verify_token(self, credentials: HTTPAuthorizationCredentials = Depends(security)):
         try:
@@ -163,6 +179,36 @@ class KMS_APIRouter(IAPIRouter):
             return user
         except jwt.PyJWTError:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+    # search doc by name
+    async def search_doc_by_name(
+        self,
+        name: str,
+        credentials: HTTPAuthorizationCredentials = Depends(security)
+    ):
+        try:
+            payload = self.decode_token(credentials.credentials)
+            email: str = payload.get("sub")
+            if email is None:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+            current_user = self.knowledge.get_user_by_email(email)
+
+            metadata = self.knowledge.get_doc_by_name(
+                name=name,
+                user_id=current_user.userId
+            )
+            if not metadata:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="Document not found or access denied"
+                )
+            return metadata
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=str(e)
+            )
 
     # get document metadata
     async def get_document_meta(
@@ -350,13 +396,19 @@ class KMS_APIRouter(IAPIRouter):
     # delete document
     async def delete_document(
             self,
-            deleted_by: str,
             document_id: str,
-            _: None = Depends(verify_token)
+            credentials: HTTPAuthorizationCredentials = Depends(security)
     ):
         try:
+            payload = self.decode_token(credentials.credentials)
+            email: str = payload.get("sub")
+            if email is None:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+            current_user = self.knowledge.get_user_by_email(email)
+
             success = self.knowledge.delete(
-                deleted_by=deleted_by,
+                deleted_by=current_user.userId,
                 document_id=document_id
             )
             if not success:
@@ -458,13 +510,19 @@ class KMS_APIRouter(IAPIRouter):
     # share permission
     async def share_document_permission(
             self,
-            shared_by: str = Form(...),
             shared_to: str = Form(...),
             document_id: str = Form(...),
             permissions: List[str] = Form(...),
-            _: None = Depends(verify_token)
+            credentials: HTTPAuthorizationCredentials = Depends(security)
     ):
         try:
+            payload = self.decode_token(credentials.credentials)
+            email: str = payload.get("sub")
+            if email is None:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+            current_user = self.knowledge.get_user_by_email(email)
+
             success = self.knowledge.share_permissions(
                 shared_by=shared_by,
                 shared_to=shared_to,

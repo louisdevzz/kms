@@ -23,7 +23,7 @@ class IDocumentDAO(ABC):
     def updateMetaData(self, document: Document) -> bool: pass
 
     @abstractmethod
-    def delete(self, documentId: str) -> bool: pass
+    def delete(self, documentId: str, session=None) -> bool: pass
 
     @abstractmethod
     def addVersion(self, documentId: str, version: Version) -> bool: pass

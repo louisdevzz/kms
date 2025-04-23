@@ -78,6 +78,9 @@ class Document(BaseModel, IDocument):
     def get_university(self) -> str:
         return self.university
 
+    def get_current_number(self) -> str:
+        return self.currentNumber
+
     def set_owner(self, new_owner: str) -> bool:
         if new_owner:
             self.owner = new_owner

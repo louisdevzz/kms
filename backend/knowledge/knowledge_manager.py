@@ -53,6 +53,16 @@ class KnowledgeManager(IKnowledgeManager):
             raise PermissionError("User does not have permission to read the document.")
         return self._docs.get_metadata(document_id=document_id, user_id=user_id)
 
+    def get_doc_by_name(self, name: str, user_id: str) -> List[Dict[str, object]]:
+        pers_of_user = self._perms.get_permissions_by_user(user_id=user_id)
+        doc_ids = [per.docId for per in pers_of_user]
+        docs = [self._docs.get_metadata(document_id=doc_id, user_id=user_id) for doc_id in doc_ids]
+        found_doc = []
+        for doc in docs:
+            if doc['name'] == name:
+                found_doc.append(doc)
+        return found_doc
+
     def get_content(self, document_id: str, user_id: str) -> Optional[BinaryIO]:
         if not self._perms.has_permission(user_id=user_id, document_id=document_id, required="read"):
             raise PermissionError("User does not have permission to read the document.")

@@ -18,6 +18,9 @@ class IDocument(ABC):
     def get_university(self) -> str: pass
 
     @abstractmethod
+    def get_current_number(self) -> str: pass
+
+    @abstractmethod
     def set_owner(self, new_owner: str) -> bool: pass
 
     @abstractmethod

@@ -72,7 +72,7 @@ class DocumentManager(IDocumentManager):
         return self._dao.update_content(modified_by, document_id, new_content, file_size)
 
     def delete(self, deleted_by: str, document_id: str) -> bool:
-        return self._dao.deleteDocument(document_id)
+        return self._dao.deleteDocument(user_id=deleted_by, document_id=document_id)
 
     def get_all_metadata(self) -> Dict[str, Dict[str, object]]:
         docs = self._dao.findAllDocuments()

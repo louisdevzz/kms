@@ -21,7 +21,7 @@ class PermissionDAO(IPermissionDAO):
         pers = self.collection.find({"userId": userId})
         return [self._convert_per(per) for per in pers]
 
-    def findByDoc(self, docId: str) -> List[Permission]:
+    def findByDoc(self, docId: str, session=None) -> List[Permission]:
         pers = self.collection.find({"docId": docId})
         return [self._convert_per(per) for per in pers]
 
@@ -43,7 +43,7 @@ class PermissionDAO(IPermissionDAO):
         )
         return result.modified_count > 0
 
-    def delete(self, permissionId: str) -> bool:
+    def delete(self, permissionId: str, session=None) -> bool:
         result = self.collection.delete_one({"_id": ObjectId(permissionId)})
         return result.deleted_count > 0
 

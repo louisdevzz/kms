@@ -5,7 +5,7 @@ from backend.dao.activitylog_module.activitylog import ActivityLog
 
 class IActivityLogDAO(ABC):
     @abstractmethod
-    def save(self, log: ActivityLog) -> bool: pass
+    def save(self, log: ActivityLog, session=None) -> bool: pass
 
     @abstractmethod
     def findById(self, activityLogId: str) -> Optional[ActivityLog]: pass

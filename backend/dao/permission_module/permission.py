@@ -31,3 +31,4 @@ class Permission(BaseModel, IPermission):
         original_length = len(self.permissions)
         self.permissions = [p for p in self.permissions if p not in permissions_to_remove]
         return len(self.permissions) < original_length
+

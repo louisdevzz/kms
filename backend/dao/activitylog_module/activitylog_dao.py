@@ -10,7 +10,7 @@ class ActivityLogDAO(IActivityLogDAO):
         self.db = mongo_client[database_name]
         self.collection = self.db[collection_name]
 
-    def save(self, log: ActivityLog) -> bool:
+    def save(self, log: ActivityLog, session=None) -> bool:
         log_dict = log.dict()
         log_dict['_id'] = ObjectId(log_dict['activityLogId'])
         del log_dict['activityLogId']
