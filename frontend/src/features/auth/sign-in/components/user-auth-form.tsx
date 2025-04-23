@@ -63,6 +63,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
         },
       })
 
+
       if(res.status == 200){
         localStorage.setItem('email', data.email)
         setAccessToken(res.data.access_token)
