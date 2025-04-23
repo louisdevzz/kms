@@ -39,19 +39,9 @@ class PermissionManager(IPermissionManager):
 
     def share_permissions(self, shared_by: str, shared_to: str, document_id: str, permissions: List[str]) -> bool:
         try:
-            # check permission before share
-            if not self.has_permission(user_id=shared_by, document_id=document_id, required="share"):
-                raise PermissionError("User does not have permission to share the document.")
-
             # validate permissions
             if not self._validate_permissions(permissions):
                 return False
-
-            existing = self._dao.getPermissionsByUserDoc(user_id=shared_to, doc_id=document_id)
-            new_perms = [p for p in permissions if p not in existing.permissions]
-
-            if not new_perms:
-                return True  # No new permissions to add
 
             return self._dao.shareDocument(document_id=document_id, user_id=shared_to, permissions=permissions)
         except Exception:

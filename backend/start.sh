@@ -7,9 +7,9 @@ APP_MODULE="api.app:app"
 
 # Function to handle cleanup
 cleanup() {
-    echo "Stopping containers..."
-    docker compose --env-file .env -f docker/docker-compose.mongo.yml down
-    docker compose --env-file .env -f docker/docker-compose.minio.yml down
+#    echo "Stopping containers..."
+#    docker compose --env-file .env -f docker/docker-compose.mongo.yml down
+#    docker compose --env-file .env -f docker/docker-compose.minio.yml down
     deactivate 2>/dev/null  # Silently deactivate venv if active
     echo "Cleanup complete"
     exit 0
@@ -18,12 +18,12 @@ cleanup() {
 trap cleanup SIGINT EXIT
 
 # Start MongoDB container
-echo "Starting MongoDB container..."
-docker compose --env-file .env -f docker/docker-compose.mongo.yml up -d
+#echo "Starting MongoDB container..."
+#docker compose --env-file .env -f docker/docker-compose.mongo.yml up -d
 
 # Start MinIO container
-echo "Starting MinIO container..."
-docker compose --env-file .env -f docker/docker-compose.minio.yml up -d
+#echo "Starting MinIO container..."
+#docker compose --env-file .env -f docker/docker-compose.minio.yml up -d
 
 # Virtual environment setup
 if [ ! -d "$VENV_DIR" ]; then

@@ -17,7 +17,6 @@ from utils.config_loader import get_storage_config, get_collections, get_db_conf
 from dao.imanagement_dao import IManagementDAO
 
 
-
 class ManagementDAO(IManagementDAO):
     def __init__(self, mongo_client=None, database_name=None):
         if mongo_client is None or database_name is None:
@@ -215,13 +214,14 @@ class ManagementDAO(IManagementDAO):
 
     # Permission
     def shareDocument(self, document_id: str, user_id: str, permissions: List[str]) -> bool:
-        existing = self.permission_dao.findByDoc(document_id)
-        for perm in existing:
-            if perm.userID == user_id:
-                # update
-                perm.permissions = list(set(perm.permissions + permissions))
-                return self.permission_dao.update(perm)
+        # first, find Permission object and update permissions attribute
+        existing = self.permission_dao.findByUserDoc(document_id=document_id, user_id=user_id)
+        if existing:
+            # update
+            perm.permissions = list(set(perm.permissions + permissions))
+            return self.permission_dao.update(perm)
 
+        # create a new Permission object
         permission = Permission(
             userID=user_id,
             docID=document_id,

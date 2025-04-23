@@ -1,7 +1,7 @@
 ### 🚀 Start the FastAPI Backend at KMS-SofwareDesign folder
 
 ```bash
-./backend/start.sh # cd KMS-SoftwareDesign 
+./start.sh # cd backend 
 ```
 
 This script will:
