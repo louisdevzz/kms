@@ -57,7 +57,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       formData.append('email', data.email)
       formData.append('password', data.password)
 
-      const baseUrl = import.meta.env.VITE_API_URL || 'https://kms-production-958c.up.railway.app'
+      const baseUrl = 'https://kms-production-958c.up.railway.app'
       const apiUrl = `${baseUrl}/kms/auth/login`
 
       const res = await axios.post(apiUrl, formData, {

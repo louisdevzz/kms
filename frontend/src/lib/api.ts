@@ -2,10 +2,7 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 
 const getBaseUrl = () => {
-  const envUrl = import.meta.env.VITE_API_URL
-  if (!envUrl) {
-    return 'https://kms-production-958c.up.railway.app'
-  }
+  const envUrl = 'https://kms-production-958c.up.railway.app'
   // Ensure the URL has a protocol
   if (!envUrl.startsWith('http://') && !envUrl.startsWith('https://')) {
     return `https://${envUrl}`
