@@ -76,7 +76,6 @@ class KnowledgeManager(IKnowledgeManager):
                         new_department_id: str, new_tags: List[str],
                         new_owner: str, new_category: str,
                         new_description: str, new_university: str) -> bool:
-
         if not self._perms.has_permission(user_id=modified_by, document_id=document_id, required="write"):
             raise PermissionError("User does not have permission to write the document.")
         return self._docs.update_metadata(
@@ -123,6 +122,8 @@ class KnowledgeManager(IKnowledgeManager):
 
     # Permission
     def share_permissions(self, shared_by: str, shared_to: str, document_id: str, permissions: List[str]) -> bool:
+        if not self._perms.has_permission(user_id=shared_by, document_id=document_id, required="share"):
+            raise PermissionError("User does not have permission to share the document.")
         return self._perms.share_permissions(
             shared_by=shared_by,
             shared_to=shared_to,
@@ -131,6 +132,8 @@ class KnowledgeManager(IKnowledgeManager):
         )
 
     def remove_permissions(self, removed_by: str, removed_to: str, document_id: str,permissions: List[str]) -> bool:
+        if not self._perms.has_permission(user_id=removed_by, document_id=document_id, required="share"):
+            raise PermissionError("User does not have permission to remove the document.")
         return self._perms.remove_permissions(
             removed_by=removed_by,
             removed_to=removed_to,

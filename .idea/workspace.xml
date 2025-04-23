@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="4ebf400d-a308-4379-9635-055f851904c5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/backend/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/backend/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/api_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/api/api_router.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/dao/management_dao.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/dao/management_dao.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/knowledge/knowledge_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/knowledge/knowledge_manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/test/api/document/upload.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/test/api/document/upload.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/test/connection/minio_storage.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/test/connection/minio_storage.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;donghuynh0&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/DarkMacician/KMS-SoftwareDesign.git&quot;,
+    &quot;accountId&quot;: &quot;3c6d3a20-a371-4f94-b363-f1646bc933fd&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/backend/docker/docker-compose.mongo.yml" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
+  <component name="ProjectId" id="2vUxpPyzYAtVZaCyG476iWS3T4u" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python tests..executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in /.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for upload_document.test_upload_document_invalid_token.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest for upload_document.test_upload_document_success.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest in find_user_by_id.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest in login.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest in protected.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest in save_user.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest in signup.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest in upload.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest in upload_document.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.pytest in user.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.Unnamed.executor&quot;: &quot;Run&quot;,
+    &quot;Python.activitylogdao.executor&quot;: &quot;Run&quot;,
+    &quot;Python.api.executor&quot;: &quot;Run&quot;,
+    &quot;Python.api_router.executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.auth_manager.executor&quot;: &quot;Run&quot;,
+    &quot;Python.authmanager.executor&quot;: &quot;Run&quot;,
+    &quot;Python.config_loader.executor&quot;: &quot;Run&quot;,
+    &quot;Python.daointerface.executor&quot;: &quot;Run&quot;,
+    &quot;Python.delete_content.executor&quot;: &quot;Run&quot;,
+    &quot;Python.delete_doc.executor&quot;: &quot;Run&quot;,
+    &quot;Python.departmentdao.executor&quot;: &quot;Run&quot;,
+    &quot;Python.doc_manager.executor&quot;: &quot;Run&quot;,
+    &quot;Python.document.executor&quot;: &quot;Run&quot;,
+    &quot;Python.document_dao.executor&quot;: &quot;Run&quot;,
+    &quot;Python.documentdao.executor&quot;: &quot;Run&quot;,
+    &quot;Python.documentmanager.executor&quot;: &quot;Run&quot;,
+    &quot;Python.find_doc_by_id.executor&quot;: &quot;Run&quot;,
+    &quot;Python.get_all_document_content.executor&quot;: &quot;Run&quot;,
+    &quot;Python.get_docIds_by_userId.executor&quot;: &quot;Run&quot;,
+    &quot;Python.get_doc_by_name.executor&quot;: &quot;Run&quot;,
+    &quot;Python.get_doc_ids.executor&quot;: &quot;Run&quot;,
+    &quot;Python.get_document_content.executor&quot;: &quot;Run&quot;,
+    &quot;Python.get_document_metadata.executor&quot;: &quot;Run&quot;,
+    &quot;Python.hasher.executor&quot;: &quot;Run&quot;,
+    &quot;Python.iapi_router.executor&quot;: &quot;Run&quot;,
+    &quot;Python.iknowledge_manager.executor&quot;: &quot;Run&quot;,
+    &quot;Python.knowledge_manager.executor&quot;: &quot;Run&quot;,
+    &quot;Python.knowledgemanager.executor&quot;: &quot;Run&quot;,
+    &quot;Python.management_dao.executor&quot;: &quot;Run&quot;,
+    &quot;Python.managementdao.executor&quot;: &quot;Run&quot;,
+    &quot;Python.minio_storage.executor&quot;: &quot;Run&quot;,
+    &quot;Python.mongo_connection.executor&quot;: &quot;Run&quot;,
+    &quot;Python.mongo_db.executor&quot;: &quot;Run&quot;,
+    &quot;Python.per_manager.executor&quot;: &quot;Run&quot;,
+    &quot;Python.permissiondao.executor&quot;: &quot;Run&quot;,
+    &quot;Python.permissionmanager.executor&quot;: &quot;Run&quot;,
+    &quot;Python.protected.executor&quot;: &quot;Run&quot;,
+    &quot;Python.signup.executor&quot;: &quot;Run&quot;,
+    &quot;Python.storage.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.upload.executor&quot;: &quot;Run&quot;,
+    &quot;Python.user.executor&quot;: &quot;Run&quot;,
+    &quot;Python.userdao.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/donghuynh0/TTU/CS3301/KMS-SoftwareDesign/backend/test/api/document&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/backend/test/api/document" />
+      <recent name="$PROJECT_DIR$/backend/test/knowledge/document" />
+      <recent name="$PROJECT_DIR$/backend/docker" />
+      <recent name="$PROJECT_DIR$/backend/test" />
+      <recent name="$PROJECT_DIR$/backend/api" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/backend" />
+      <recent name="$PROJECT_DIR$/backend/test/api" />
+      <recent name="$PROJECT_DIR$/backend/test/dao/minio" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/backend/test/dao/user" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-348a24fa61fa-5312c7369657-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-251.23774.444" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4ebf400d-a308-4379-9635-055f851904c5" name="Changes" comment="" />
+      <created>1744213636025</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1744213636025</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName=".env" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

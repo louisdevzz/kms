@@ -482,6 +482,7 @@ class KMS_APIRouter(IAPIRouter):
     ):
         try:
             current_user = self.get_user_from_token(credentials)
+
             success = self.knowledge.share_permissions(
                 shared_by=current_user.userId,
                 shared_to=shared_to,
@@ -505,15 +506,16 @@ class KMS_APIRouter(IAPIRouter):
     # remove version
     async def remove_document_permission(
             self,
-            removed_by: str = Form(...),
             removed_to: str = Form(...),
             document_id: str = Form(...),
             permissions: List[str] = Form(...),
-            _: None = Depends(verify_token)
+            credentials: HTTPAuthorizationCredentials = Depends(security)
     ):
         try:
+            current_user = self.get_user_from_token(credentials)
+
             success = self.knowledge.remove_permissions(
-                removed_by=removed_by,
+                removed_by=current_user.userId,
                 removed_to=removed_to,
                 document_id=document_id,
                 permissions=permissions
