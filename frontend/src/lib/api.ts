@@ -1,10 +1,22 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 
-const baseUrl = import.meta.env.VITE_API_URL || 'https://kms-production-958c.up.railway.app'
+const getBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL
+  if (!envUrl) {
+    return 'https://kms-production-958c.up.railway.app'
+  }
+  // Ensure the URL has a protocol
+  if (!envUrl.startsWith('http://') && !envUrl.startsWith('https://')) {
+    return `https://${envUrl}`
+  }
+  return envUrl
+}
+
+const baseUrl = getBaseUrl()
 
 const api = axios.create({
-  baseURL: new URL('/kms', baseUrl).toString(),
+  baseURL: `${baseUrl}/kms`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -41,7 +53,7 @@ export const fetchUser = async () => {
 export const uploadDocument = async (formData: FormData, self: boolean = true) => {
   try {
     const uploadApi = axios.create({
-      baseURL: new URL('/kms', baseUrl).toString(),
+      baseURL: `${baseUrl}/kms`,
       headers: {
         'Authorization': `Bearer ${useAuthStore.getState().auth.accessToken}`,
         'Accept': 'application/json',

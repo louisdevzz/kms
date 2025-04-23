@@ -105,17 +105,11 @@ export function DocumentUploadForm() {
       })
       
       // Append each category individually
-      formData.append('category',data.category)
-      formData.append('additional',data.additional)
-
-      // console.log('FormData contents:')
-      // for (const [key, value] of formData.entries()) {
-      //   console.log(`${key}:  ${(value)}`)
-      // }
+      formData.append('category', data.category)
+      formData.append('additional', data.additional)
 
       // Use the API function instead of direct fetch
       await uploadDocument(formData, true)
-      // console.log(response)
 
       toast({
         title: 'Success',

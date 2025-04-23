@@ -70,7 +70,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
       })
 
       const baseUrl = import.meta.env.VITE_API_URL || 'https://kms-production-958c.up.railway.app'
-      const apiUrl = new URL('/kms/auth/signup', baseUrl).toString()
+      const apiUrl = `${baseUrl}/kms/auth/signup`
 
       const signUpRes = await axios.post(apiUrl, formData, {
         headers: {
@@ -84,7 +84,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
         loginFormData.append('email', data.email)
         loginFormData.append('password', data.password)
 
-        const loginUrl = new URL('/kms/auth/login', baseUrl).toString()
+        const loginUrl = `${baseUrl}/kms/auth/login`
         const loginRes = await axios.post(loginUrl, loginFormData, {
           headers: {
             'Content-Type': 'multipart/form-data',

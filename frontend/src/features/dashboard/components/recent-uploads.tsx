@@ -85,7 +85,7 @@ const RecentUploadCard = ({documentId}: RecentUploadCardProps) =>{
       return;
     }
     const baseUrl = import.meta.env.VITE_API_URL || 'https://kms-production-958c.up.railway.app'
-    const apiUrl = new URL(`/kms/document/${documentId}`, baseUrl).toString()
+    const apiUrl = `${baseUrl}/kms/document/${documentId}`
     try {
       await axios.delete(
         apiUrl,
