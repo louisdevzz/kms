@@ -34,7 +34,8 @@ app = FastAPI(
 # CORS configuration
 origins = [
     "http://localhost:5173",
-    "*"
+    "*",
+    "https://kmsttu.vercel.app"
 ]
 
 app.add_middleware(
