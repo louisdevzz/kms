@@ -69,7 +69,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
         formData.append('roles', role)
       })
 
-      const baseUrl = 'https://kms-production-958c.up.railway.app'
+      const baseUrl = import.meta.env.VITE_API_URL || 'https://kms-production-958c.up.railway.app'
       const apiUrl = `${baseUrl}/kms/auth/signup`
 
       const signUpRes = await axios.post(apiUrl, formData, {

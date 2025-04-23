@@ -22,6 +22,10 @@ import { ProfileDropdown } from '@/components/profile-dropdown'
 import { Search } from '@/components/search'
 import { ThemeSwitch } from '@/components/theme-switch'
 import { PDFViewerDialog } from '@/components/pdf-viewer-dialog'
+import { TextViewerDialog } from '@/components/text-viewer-dialog'
+import { ImageViewerDialog } from '@/components/image-viewer-dialog'
+import { ExcelViewerDialog } from '@/components/excel-viewer-dialog'
+import { DocxViewerDialog } from '@/components/docx-viewer-dialog'
 import { useQuery } from '@tanstack/react-query'
 import { fetchDocuments, fetchDocumentMetadata, fetchDocumentContent } from '@/lib/api'
 
@@ -31,45 +35,76 @@ interface DocumentCardProps{
 
 const DocumentCard = ({ documentId }: DocumentCardProps) => {
   const [isViewerOpen, setIsViewerOpen] = useState(false)
-  const [pdfUrl, setPdfUrl] = useState<string>('')
+  const [documentUrl, setDocumentUrl] = useState<string>('')
 
   const { data: metadataDoc, isLoading: isLoadingMetadata } = useQuery({
     queryKey: ['metadataDoc', documentId],
     queryFn: () => fetchDocumentMetadata(documentId)
   })
 
+  // console.log('metadataDoc', metadataDoc)
+
   const { data: document, isLoading: isLoadingDocument } = useQuery({
     queryKey: ['document', documentId],
     queryFn: () => fetchDocumentContent(documentId)
   })
 
-  const getPdfDataUrl = () => {
+  const getDataUrl = () => {
     try {
       if (!document) {
         return '';
       }
 
       if (document instanceof ArrayBuffer) {
-        const blob = new Blob([document], { type: 'application/pdf' });
+        let mimeType = 'application/pdf';
+        const type = metadataDoc?.dType || 'pdf';
+        
+        // If the type is already a MIME type, use it directly
+        if (type.includes('/')) {
+          mimeType = type;
+        } else {
+          // Otherwise, map simplified type to MIME type
+          switch (type) {
+            case 'pdf':
+              mimeType = 'application/pdf';
+              break;
+            case 'text':
+              mimeType = 'text/plain';
+              break;
+            case 'image':
+              mimeType = 'image/jpeg'; // Default image type
+              break;
+            case 'excel':
+              mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+              break;
+            case 'docx':
+              mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+              break;
+            default:
+              mimeType = 'application/pdf';
+          }
+        }
+        
+        const blob = new Blob([document], { type: mimeType });
         return URL.createObjectURL(blob);
       }
 
       return '';
     } catch (error) {
-      console.error('Error processing PDF data:', error);
+      console.error('Error processing document data:', error);
       return '';
     }
   }
 
   useEffect(() => {
     if (document) {
-      const url = getPdfDataUrl();
-      setPdfUrl(url);
+      const url = getDataUrl();
+      setDocumentUrl(url);
     }
     
     return () => {
-      if (pdfUrl && pdfUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(pdfUrl);
+      if (documentUrl && documentUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(documentUrl);
       }
     };
   }, [document]);
@@ -89,6 +124,72 @@ const DocumentCard = ({ documentId }: DocumentCardProps) => {
       </div>
     )
   }
+
+  const renderDocumentViewer = () => {
+    const documentType = metadataDoc?.dType || 'pdf';
+    // console.log('documentType', documentType)
+    
+    if (documentType === 'pdf' || documentType === 'application/pdf') {
+      return (
+        <PDFViewerDialog
+          open={isViewerOpen}
+          onOpenChange={setIsViewerOpen}
+          documentUrl={documentUrl}
+          title={metadataDoc?.name}
+        />
+      );
+    } else if (documentType === 'text' || documentType === 'text/plain') {
+      return (
+        <TextViewerDialog
+          open={isViewerOpen}
+          onOpenChange={setIsViewerOpen}
+          documentUrl={documentUrl}
+          title={metadataDoc?.name}
+        />
+      );
+    } else if (documentType === 'image' || documentType.startsWith('image/')) {
+      return (
+        <ImageViewerDialog
+          open={isViewerOpen}
+          onOpenChange={setIsViewerOpen}
+          documentUrl={documentUrl}
+          title={metadataDoc?.name}
+        />
+      );
+    } else if (documentType === 'excel' || 
+              documentType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+              documentType === 'application/vnd.ms-excel') {
+      return (
+        <ExcelViewerDialog
+          open={isViewerOpen}
+          onOpenChange={setIsViewerOpen}
+          documentUrl={documentUrl}
+          title={metadataDoc?.name}
+        />
+      );
+    } else if (documentType === 'docx' || 
+              documentType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+              documentType === 'application/msword') {
+      return (
+        <DocxViewerDialog
+          open={isViewerOpen}
+          onOpenChange={setIsViewerOpen}
+          documentUrl={documentUrl}
+          title={metadataDoc?.name}
+        />
+      );
+    } else {
+      // Default to PDF viewer
+      return (
+        <PDFViewerDialog
+          open={isViewerOpen}
+          onOpenChange={setIsViewerOpen}
+          documentUrl={documentUrl}
+          title={metadataDoc?.name}
+        />
+      );
+    }
+  };
 
   return (
     <>
@@ -113,12 +214,7 @@ const DocumentCard = ({ documentId }: DocumentCardProps) => {
         </div>
       </div>
 
-      <PDFViewerDialog
-        open={isViewerOpen}
-        onOpenChange={setIsViewerOpen}
-        documentUrl={pdfUrl}
-        title={metadataDoc?.name}
-      />
+      {renderDocumentViewer()}
     </>
   )
 }
