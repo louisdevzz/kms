@@ -69,7 +69,9 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
         formData.append('roles', role)
       })
 
-      const signUpRes = await axios.post(`${import.meta.env.VITE_API_URL}/kms/auth/signup`, formData, {
+      const apiUrl = import.meta.env.VITE_API_URL || "https://kms-production-958c.up.railway.app"
+
+      const signUpRes = await axios.post(`${apiUrl}/kms/auth/signup`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -81,7 +83,7 @@ export function SignUpForm({ className, ...props }: SignUpFormProps) {
         loginFormData.append('email', data.email)
         loginFormData.append('password', data.password)
 
-        const loginRes = await axios.post(`${import.meta.env.VITE_API_URL}/kms/auth/login`, loginFormData, {
+        const loginRes = await axios.post(`${apiUrl}/kms/auth/login`, loginFormData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },

@@ -8,7 +8,7 @@ import NotFoundError from '@/features/errors/not-found-error'
 import { Analytics } from "@vercel/analytics/react"
 import Cookies from 'js-cookie'
 
-const ACCESS_TOKEN = import.meta.env.VITE_ACCESS_TOKEN
+const ACCESS_TOKEN = import.meta.env.VITE_ACCESS_TOKEN || 'kms'
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient

@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie'
 import { create } from 'zustand'
 
-const ACCESS_TOKEN = import.meta.env.VITE_ACCESS_TOKEN
+const ACCESS_TOKEN = import.meta.env.VITE_ACCESS_TOKEN || 'kms'
 
 interface userAuth {
   email: string;

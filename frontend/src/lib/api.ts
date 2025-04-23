@@ -1,8 +1,10 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 
+const apiUrl = import.meta.env.VITE_API_URL || 'https://kms-production-958c.up.railway.app'
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL+'/kms',
+  baseURL: apiUrl +'/kms',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -38,9 +40,11 @@ export const fetchUser = async () => {
  */
 export const uploadDocument = async (formData: FormData, self: boolean = true) => {
   try {
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://kms-production-958c.up.railway.app'
+
     // Create a custom axios instance for this request to handle FormData
     const uploadApi = axios.create({
-      baseURL: import.meta.env.VITE_API_URL+'/kms',
+      baseURL: apiUrl +'/kms',
       headers: {
         'Authorization': `Bearer ${useAuthStore.getState().auth.accessToken}`,
         'Accept': 'application/json',

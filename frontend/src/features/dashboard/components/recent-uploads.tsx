@@ -84,10 +84,10 @@ const RecentUploadCard = ({documentId}: RecentUploadCardProps) =>{
       })
       return;
     }
-
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://kms-production-958c.up.railway.app'
     try {
       await axios.delete(
-        `${import.meta.env.VITE_API_URL}/kms/document/${documentId}`,
+        `${apiUrl}/kms/document/${documentId}`,
         {
           headers: {
             "Authorization": `Bearer ${JSON.parse(localStorage.getItem('access_token') || '')}`,

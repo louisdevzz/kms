@@ -57,12 +57,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       formData.append('email', data.email)
       formData.append('password', data.password)
 
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/kms/auth/login`, formData, {
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://kms-production-958c.up.railway.app'
+      const res = await axios.post(`${apiUrl}/kms/auth/login`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       })
-
 
       if(res.status == 200){
         localStorage.setItem('email', data.email)
