@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, BinaryIO
-from backend.dao.management_dao import Document, Version
+from dao.management_dao import Document, Version
 
 
 class IDocumentManager(ABC):

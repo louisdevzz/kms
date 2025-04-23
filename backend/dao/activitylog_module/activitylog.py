@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from bson import ObjectId
 from datetime import datetime
-from backend.dao.activitylog_module.iactivitylog import IActivityLog
+from dao.activitylog_module.iactivitylog import IActivityLog
 
 
 class ActivityLog(BaseModel, IActivityLog):

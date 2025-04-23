@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from backend.dao.permission_module.permission import Permission
+from dao.permission_module.permission import Permission
 
 
 class IPermissionDAO(ABC):

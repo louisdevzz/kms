@@ -1,20 +1,20 @@
 from typing import List, Optional, BinaryIO
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
-from backend.dao.user_module.user import User
-from backend.dao.user_module.user_dao import UserDAO
-from backend.dao.document_module.document import Document, Version
-from backend.dao.document_module.document_dao import DocumentDAO
-from backend.dao.department_module.department import Department
-from backend.dao.department_module.department_dao import DepartmentDAO
-from backend.dao.activitylog_module.activitylog import ActivityLog
-from backend.dao.activitylog_module.activitylog_dao import ActivityLogDAO
-from backend.dao.permission_module.permission import Permission
-from backend.dao.permission_module.permission_dao import PermissionDAO
-from backend.dao.minio_module.storage import MinIOStorage
+from dao.user_module.user import User
+from dao.user_module.user_dao import UserDAO
+from dao.document_module.document import Document, Version
+from dao.document_module.document_dao import DocumentDAO
+from dao.department_module.department import Department
+from dao.department_module.department_dao import DepartmentDAO
+from dao.activitylog_module.activitylog import ActivityLog
+from dao.activitylog_module.activitylog_dao import ActivityLogDAO
+from dao.permission_module.permission import Permission
+from dao.permission_module.permission_dao import PermissionDAO
+from dao.minio_module.storage import MinIOStorage
 from datetime import timedelta
-from backend.utils.config_loader import get_storage_config, get_collections, get_db_config
-from backend.dao.imanagement_dao import IManagementDAO
+from utils.config_loader import get_storage_config, get_collections, get_db_config
+from dao.imanagement_dao import IManagementDAO
 
 
 

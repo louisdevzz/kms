@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 import logging
-from backend.knowledge.knowledge_manager import KnowledgeManager
-from backend.api.api_router import KMS_APIRouter
+from knowledge.knowledge_manager import KnowledgeManager
+from api.api_router import KMS_APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
 logger = logging.getLogger(__name__)

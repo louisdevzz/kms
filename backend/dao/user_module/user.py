@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from bson import ObjectId
 from typing import List, Dict, Optional
-from backend.dao.user_module.iuser import IUser
+from dao.user_module.iuser import IUser
 
 
 class User(BaseModel, IUser):

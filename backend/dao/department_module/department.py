@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from bson import ObjectId
-from backend.dao.department_module.idepartment import IDepartment
+from dao.department_module.idepartment import IDepartment
 
 
 class Department(BaseModel, IDepartment):

@@ -1,7 +1,7 @@
 import requests
 import logging
 import io
-from backend.test.api.auth.login import test_login
+from test.api.auth.login import test_login
 
 
 logging.basicConfig(level=logging.INFO)

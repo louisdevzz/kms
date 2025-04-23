@@ -1,7 +1,7 @@
 import unittest
 import mongomock
-from backend.dao.management_dao import ManagementDAO
-from backend.dao.user_module.user import User
+from dao.management_dao import ManagementDAO
+from dao.user_module.user import User
 
 
 class SaveUser(unittest.TestCase):

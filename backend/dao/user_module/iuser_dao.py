@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from backend.dao.user_module.user import User
+from dao.user_module.user import User
 from typing import List, Optional
 
 

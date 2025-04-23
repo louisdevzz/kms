@@ -1,8 +1,8 @@
 from typing import Dict, List, Optional, BinaryIO
-from backend.dao.management_dao import Document, Version
-from backend.dao.management_dao import ManagementDAO
-from backend.knowledge.permission.per_manager import PermissionManager
-from backend.knowledge.document.idoc_manager import IDocumentManager
+from dao.management_dao import Document, Version
+from dao.management_dao import ManagementDAO
+from knowledge.permission.per_manager import PermissionManager
+from knowledge.document.idoc_manager import IDocumentManager
 
 
 class DocumentManager(IDocumentManager):

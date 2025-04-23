@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import certifi
-from backend.utils.config_loader import get_db_config
+from utils.config_loader import get_db_config
 
 load_dotenv()
 

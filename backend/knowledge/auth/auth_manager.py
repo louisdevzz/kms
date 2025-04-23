@@ -1,7 +1,7 @@
 from typing import Optional, List, Dict
-from backend.dao.management_dao import User, ManagementDAO
-from backend.utils.hasher import get_password_hash, verify_password
-from backend.knowledge.auth.iauth_manager import IAuthManager
+from dao.management_dao import User, ManagementDAO
+from utils.hasher import get_password_hash, verify_password
+from knowledge.auth.iauth_manager import IAuthManager
 
 
 class AuthManager(IAuthManager):

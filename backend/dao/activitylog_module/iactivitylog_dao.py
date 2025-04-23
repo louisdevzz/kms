@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from backend.dao.activitylog_module.activitylog import ActivityLog
+from dao.activitylog_module.activitylog import ActivityLog
 
 
 class IActivityLogDAO(ABC):

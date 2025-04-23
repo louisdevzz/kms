@@ -1,7 +1,7 @@
 from minio import Minio
 from minio.error import S3Error
 from dotenv import load_dotenv
-from backend.utils.config_loader import get_storage_config
+from utils.config_loader import get_storage_config
 
 load_dotenv()
 

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List, Dict
-from backend.dao.management_dao import User
+from dao.management_dao import User
 
 
 class IAuthManager(ABC):

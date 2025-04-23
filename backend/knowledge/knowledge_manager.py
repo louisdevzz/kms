@@ -1,9 +1,9 @@
 from typing import Dict, List, Optional, BinaryIO
-from backend.knowledge.auth.auth_manager import AuthManager
-from backend.knowledge.document.doc_manager import DocumentManager
-from backend.knowledge.permission.per_manager import PermissionManager
-from backend.dao.management_dao import ManagementDAO, User, Document, Version
-from backend.knowledge.iknowledge_manager import IKnowledgeManager
+from knowledge.auth.auth_manager import AuthManager
+from knowledge.document.doc_manager import DocumentManager
+from knowledge.permission.per_manager import PermissionManager
+from dao.management_dao import ManagementDAO, User, Document, Version
+from knowledge.iknowledge_manager import IKnowledgeManager
 
 
 class KnowledgeManager(IKnowledgeManager):

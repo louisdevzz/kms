@@ -1,7 +1,7 @@
 from typing import List
-from backend.dao.management_dao import ManagementDAO
-from backend.knowledge.permission.iper_manager import IPermissionManager
-from backend.dao.permission_module.permission import Permission
+from dao.management_dao import ManagementDAO
+from knowledge.permission.iper_manager import IPermissionManager
+from dao.permission_module.permission import Permission
 
 
 class PermissionManager(IPermissionManager):

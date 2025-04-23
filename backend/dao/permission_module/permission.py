@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from bson import ObjectId
 from typing import List
-from backend.dao.permission_module.ipermission import IPermission
+from dao.permission_module.ipermission import IPermission
 
 
 class Permission(BaseModel, IPermission):

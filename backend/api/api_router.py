@@ -1,14 +1,14 @@
-from backend.utils.config_loader import get_secret_key
+from utils.config_loader import get_secret_key
 from typing import Optional, List
-from backend.knowledge.knowledge_manager import KnowledgeManager
-from backend.dao.user_module.user import User
+from knowledge.knowledge_manager import KnowledgeManager
+from dao.user_module.user import User
 from fastapi import HTTPException, Depends, status, APIRouter, Form, UploadFile, File, Body, Query
 import logging
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
 from datetime import datetime, timedelta
 from io import BytesIO
-from backend.api.iapi_router import IAPIRouter
+from api.iapi_router import IAPIRouter
 from fastapi.responses import StreamingResponse
 
 

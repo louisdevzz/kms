@@ -1,8 +1,8 @@
 from typing import List, Optional
 from pymongo import MongoClient
 from bson import ObjectId
-from backend.dao.permission_module.ipermission_dao import IPermissionDAO
-from backend.dao.permission_module.permission import Permission
+from dao.permission_module.ipermission_dao import IPermissionDAO
+from dao.permission_module.permission import Permission
 
 
 class PermissionDAO(IPermissionDAO):

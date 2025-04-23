@@ -1,8 +1,8 @@
 from typing import List, Optional
 from pymongo import MongoClient
 from bson import ObjectId
-from backend.dao.activitylog_module.activitylog import ActivityLog
-from backend.dao.activitylog_module.iactivitylog_dao import IActivityLogDAO
+from dao.activitylog_module.activitylog import ActivityLog
+from dao.activitylog_module.iactivitylog_dao import IActivityLogDAO
 
 
 class ActivityLogDAO(IActivityLogDAO):

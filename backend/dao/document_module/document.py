@@ -2,7 +2,7 @@ from typing import List, Dict, Optional
 from pydantic import BaseModel, Field
 from datetime import datetime
 from bson import ObjectId
-from backend.dao.document_module.idocument import IDocument
+from dao.document_module.idocument import IDocument
 
 
 class Version(BaseModel):

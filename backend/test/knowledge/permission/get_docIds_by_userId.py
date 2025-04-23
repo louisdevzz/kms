@@ -1,4 +1,4 @@
-from backend.knowledge.knowledge_manager import KnowledgeManager
+from knowledge.knowledge_manager import KnowledgeManager
 
 knowledge = KnowledgeManager()
 

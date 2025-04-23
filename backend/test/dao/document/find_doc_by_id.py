@@ -1,4 +1,4 @@
-from backend.dao.management_dao import ManagementDAO
+from dao.management_dao import ManagementDAO
 
 dao = ManagementDAO()
 
