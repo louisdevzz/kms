@@ -82,6 +82,11 @@ class KMS_APIRouter(IAPIRouter):
             email: str = payload.get("sub")
             if email is None:
                 raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+            # Return the user for use in routes
+            current_user = self.knowledge.get_user_by_email(email)
+            if not current_user:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+            return current_user
         except jwt.PyJWTError:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
@@ -141,11 +146,17 @@ class KMS_APIRouter(IAPIRouter):
             category: Optional[str] = Form(None),
             description: Optional[str] = Form(None),
             university: Optional[str] = Form(None),
-            _: None = Depends(verify_token)  # verify token
+            current_user: User = Depends(verify_token)  # Get user from token
     ):
         content = await document.read()
         content_io = BytesIO(content)
         try:
+            # If owner not provided, use the current user's email
+            if not owner:
+                owner = current_user.email
+                
+            logger.info(f"Uploading document with owner: {owner}")
+                
             result = self.knowledge.upload(
                 content=content_io,
                 name=name,
@@ -159,6 +170,7 @@ class KMS_APIRouter(IAPIRouter):
             )
             return result
         except Exception as e:
+            logger.error(f"Upload error: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(e)
@@ -301,7 +313,7 @@ class KMS_APIRouter(IAPIRouter):
             new_category: str = Body(...),
             new_description: str = Body(...),
             new_university: str = Body(...),
-            _: None = Depends(verify_token)
+            current_user: User = Depends(verify_token)
     ):
         try:
             success = self.knowledge.update_metadata(
@@ -340,7 +352,7 @@ class KMS_APIRouter(IAPIRouter):
             document_id: str,
             modified_by: str = Form(...),
             document: UploadFile = File(...),
-            _: None = Depends(verify_token)
+            current_user: User = Depends(verify_token)
     ):
         try:
             content = await document.read()
@@ -395,7 +407,7 @@ class KMS_APIRouter(IAPIRouter):
             self,
             user_id: str,
             document_id: str,
-            _: None = Depends(verify_token)
+            current_user: User = Depends(verify_token)
     ):
         try:
             versions = self.knowledge.get_all_versions(
@@ -422,7 +434,7 @@ class KMS_APIRouter(IAPIRouter):
             user_id: str,
             document_id: str,
             version_number: str,
-            _: None = Depends(verify_token)
+            current_user: User = Depends(verify_token)
     ):
         try:
             document = self.knowledge.get_specific_version(
@@ -450,7 +462,7 @@ class KMS_APIRouter(IAPIRouter):
             document_id: str,
             version_number: str = Form(...),
             restored_by: str = Form(...),
-            _: None = Depends(verify_token)
+            current_user: User = Depends(verify_token)
     ):
         try:
             success = self.knowledge.restore_version(
@@ -509,7 +521,7 @@ class KMS_APIRouter(IAPIRouter):
             removed_to: str = Form(...),
             document_id: str = Form(...),
             permissions: List[str] = Form(...),
-            _: None = Depends(verify_token)
+            current_user: User = Depends(verify_token)
     ):
         try:
             success = self.knowledge.remove_permissions(

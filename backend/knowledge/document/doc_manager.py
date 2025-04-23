@@ -3,7 +3,9 @@ from dao.management_dao import Document, Version
 from dao.management_dao import ManagementDAO
 from knowledge.permission.per_manager import PermissionManager
 from knowledge.document.idoc_manager import IDocumentManager
+import logging
 
+logger = logging.getLogger(__name__)
 
 class DocumentManager(IDocumentManager):
     def __init__(self, management_dao: ManagementDAO):
@@ -14,9 +16,17 @@ class DocumentManager(IDocumentManager):
                tags: List[str], owner: str, category: str,
                description: str, university: str) -> dict:
         try:
+            logger.info(f"Starting document upload process for: {name} by {owner}")
+            
+            if not owner:
+                logger.error("Upload failed: Owner field is required")
+                return {"error": "Owner field is required"}
+                
             content.seek(0, 2)
             file_size = content.tell()
             content.seek(0)
+            
+            logger.info(f"Document size: {file_size} bytes")
 
             doc = Document(
                 name=name,
@@ -29,10 +39,19 @@ class DocumentManager(IDocumentManager):
                 tags=tags,
                 category=category
             )
+            logger.info(f"Created document metadata with ID: {doc.documentId}")
+            
             result = self._dao.saveDocument(doc, content)
+            
+            if "error" in result:
+                logger.error(f"Upload failed: {result['error']}")
+            else:
+                logger.info(f"Document uploaded successfully with ID: {doc.documentId}")
+                
             return result
-        except Exception:
-            return []
+        except Exception as e:
+            logger.error(f"Error in document upload: {str(e)}", exc_info=True)
+            return {"error": str(e)}
 
     def get_metadata(self, document_id: str, user_id: str) -> Dict[str, object]:
         doc = self._dao.findDocumentById(document_id)

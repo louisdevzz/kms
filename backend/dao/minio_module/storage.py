@@ -30,6 +30,7 @@ class MinIOStorage:
     def addDoc(self, object_name: str, data: BinaryIO, length: int,
                content_type: str = "application/octet-stream") -> bool:
         try:
+            self.logger.info(f"Attempting to upload document: {object_name}, length: {length}")
             self.client.put_object(
                 bucket_name=self.bucket_name,
                 object_name=object_name,
@@ -37,20 +38,29 @@ class MinIOStorage:
                 length=length,
                 content_type=content_type
             )
+            self.logger.info(f"Successfully uploaded document: {object_name}")
             return True
         except S3Error as e:
-            self.logger.error(f"Error adding document {object_name}: {e}")
+            self.logger.error(f"S3Error adding document {object_name}: {e}")
+            return False
+        except Exception as e:
+            self.logger.error(f"Unexpected error adding document {object_name}: {e}")
             return False
 
     def getDoc(self, object_name: str) -> Optional[BinaryIO]:
         try:
+            self.logger.info(f"Attempting to get document: {object_name}")
             response = self.client.get_object(
                 bucket_name=self.bucket_name,
                 object_name=object_name
             )
+            self.logger.info(f"Successfully retrieved document: {object_name}")
             return response
         except S3Error as e:
-            self.logger.error(f"Error getting document {object_name}: {e}")
+            self.logger.error(f"S3Error getting document {object_name}: {e}")
+            return None
+        except Exception as e:
+            self.logger.error(f"Unexpected error getting document {object_name}: {e}")
             return None
 
     def getDocUrl(self, object_name: str, expires: timedelta) -> Optional[str]:
