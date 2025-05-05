@@ -5,6 +5,8 @@ import {
   IconSortDescendingLetters,
   IconFileText,
   IconEye,
+  IconShare,
+  IconEdit,
 } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -27,7 +29,11 @@ import { ImageViewerDialog } from '@/components/image-viewer-dialog'
 import { ExcelViewerDialog } from '@/components/excel-viewer-dialog'
 import { DocxViewerDialog } from '@/components/docx-viewer-dialog'
 import { useQuery } from '@tanstack/react-query'
-import { fetchDocuments, fetchDocumentMetadata, fetchDocumentContent } from '@/lib/api'
+import { fetchDocuments, fetchDocumentMetadata, fetchDocumentContent, searchDocuments, shareDocument } from '@/lib/api'
+import { useNavigate } from '@tanstack/react-router'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { useState as useDialogState } from 'react'
 
 interface DocumentCardProps{
   documentId: string;
@@ -36,6 +42,11 @@ interface DocumentCardProps{
 const DocumentCard = ({ documentId }: DocumentCardProps) => {
   const [isViewerOpen, setIsViewerOpen] = useState(false)
   const [documentUrl, setDocumentUrl] = useState<string>('')
+  const navigate = useNavigate()
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false)
+  const [shareEmail, setShareEmail] = useState('')
+  const [isSharing, setIsSharing] = useState(false)
+  const [permission, setPermission] = useState('read')
 
   const { data: metadataDoc, isLoading: isLoadingMetadata } = useQuery({
     queryKey: ['metadataDoc', documentId],
@@ -111,6 +122,30 @@ const DocumentCard = ({ documentId }: DocumentCardProps) => {
 
   const handleView = () => {
     setIsViewerOpen(true)
+  }
+
+  const handleShare = async () => {
+    if (!shareEmail) return
+    
+    setIsSharing(true)
+    try {
+      // Call the actual API function to share the document
+      await shareDocument(documentId, shareEmail, permission)
+      
+      alert(`Document shared with ${shareEmail} with ${permission} permission`)
+      setIsShareDialogOpen(false)
+      setShareEmail('')
+      setPermission('read')
+    } catch (error) {
+      console.error('Error sharing document:', error)
+      alert('Failed to share document. Please try again.')
+    } finally {
+      setIsSharing(false)
+    }
+  }
+
+  const handleShareClick = () => {
+    setIsShareDialogOpen(true)
   }
 
   if (isLoadingMetadata || isLoadingDocument) {
@@ -198,15 +233,35 @@ const DocumentCard = ({ documentId }: DocumentCardProps) => {
           <div className="flex size-10 items-center justify-center rounded-lg bg-muted p-2">
             <IconFileText className="h-5 w-5" />
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleView}
-            className="flex items-center gap-2"
-          >
-            <IconEye className="h-4 w-4" />
-            View
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleView}
+              className="flex items-center gap-2"
+            >
+              <IconEye className="h-4 w-4" />
+              View
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate({ to: `/edit/${documentId}` })}
+              className="flex items-center gap-2"
+            >
+              <IconEdit className="h-4 w-4" />
+              Edit
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleShareClick}
+              className="flex items-center gap-2"
+            >
+              <IconShare className="h-4 w-4" />
+              Share
+            </Button>
+          </div>
         </div>
         <div>
           <h2 className="mb-1 font-semibold">{metadataDoc?.name}</h2>
@@ -215,6 +270,56 @@ const DocumentCard = ({ documentId }: DocumentCardProps) => {
       </div>
 
       {renderDocumentViewer()}
+      
+      <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Share Document</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="email" className="text-right">
+                Email
+              </Label>
+              <Input
+                id="email"
+                type="email"
+                value={shareEmail}
+                onChange={(e) => setShareEmail(e.target.value)}
+                placeholder="Enter recipient's email"
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="permission" className="text-right">
+                Permission
+              </Label>
+              <div className="col-span-3">
+                <Select value={permission} onValueChange={setPermission}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select permission" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="read">Read only</SelectItem>
+                    <SelectItem value="edit">Can edit</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button 
+              onClick={handleShare} 
+              disabled={!shareEmail || isSharing}
+            >
+              {isSharing ? 'Sharing...' : 'Share'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
@@ -222,11 +327,48 @@ const DocumentCard = ({ documentId }: DocumentCardProps) => {
 export default function Documents() {
   const [sort, setSort] = useState('ascending')
   const [searchTerm, setSearchTerm] = useState('')
+  const [filteredDocumentIds, setFilteredDocumentIds] = useState<string[]>([])
 
-  const { data: documentIds, error } = useQuery({
+  const { data: documentIds, error, isLoading } = useQuery({
     queryKey: ['documentIds'],
     queryFn: () => fetchDocuments(true)
   })
+
+  useEffect(() => {
+    if (documentIds) {
+      setFilteredDocumentIds(documentIds)
+    }
+  }, [documentIds])
+  
+  const handleSearch = async () => {
+    if (!searchTerm.trim()) {
+      // If search term is empty, reset to all documents
+      setFilteredDocumentIds(documentIds || [])
+      return
+    }
+    
+    try {
+      const searchResults = await searchDocuments(searchTerm)
+      // Extract document IDs from search results
+      const resultIds = searchResults.map((doc: any) => doc.id)
+      setFilteredDocumentIds(resultIds)
+    } catch (error) {
+      console.error('Error searching documents:', error)
+      // In case of error, keep the current list
+    }
+  }
+  
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchTerm) {
+        handleSearch()
+      } else {
+        setFilteredDocumentIds(documentIds || [])
+      }
+    }, 500)
+    
+    return () => clearTimeout(delayDebounceFn)
+  }, [searchTerm, documentIds])
 
   if (error) {
     return (
@@ -276,7 +418,7 @@ export default function Documents() {
         <div className='my-4 flex items-end justify-between sm:my-0 sm:items-center'>
           <div className='flex flex-col gap-4 sm:my-4 sm:flex-row'>
             <Input
-              placeholder='Filter apps...'
+              placeholder='Filter documents...'
               className='h-9 w-40 lg:w-[250px]'
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -307,16 +449,24 @@ export default function Documents() {
           </Select>
         </div>
         <Separator className='shadow' />
-        <ul className='faded-bottom no-scrollbar grid gap-4 overflow-auto pb-16 pt-4 md:grid-cols-2 lg:grid-cols-3'>
-          {documentIds?.length > 0 &&
-            documentIds.map((documentId: string) => (
+        {isLoading ? (
+          <div className="py-8 text-center">
+            <p className="text-muted-foreground">Loading documents...</p>
+          </div>
+        ) : filteredDocumentIds.length === 0 ? (
+          <div className="py-8 text-center">
+            <p className="text-muted-foreground">No documents found. Try a different search term.</p>
+          </div>
+        ) : (
+          <ul className='faded-bottom no-scrollbar grid gap-4 overflow-auto pb-16 pt-4 md:grid-cols-2 lg:grid-cols-3'>
+            {filteredDocumentIds.map((documentId: string) => (
               <DocumentCard
                 key={documentId}
                 documentId={documentId}
               />
-            ))
-          }
-        </ul>
+            ))}
+          </ul>
+        )}
       </Main>
     </>
   )

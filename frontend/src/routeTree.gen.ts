@@ -61,6 +61,9 @@ const AuthenticatedSettingsAppearanceLazyImport = createFileRoute(
 const AuthenticatedSettingsAccountLazyImport = createFileRoute(
   '/_authenticated/settings/account',
 )()
+const AuthenticatedEditDocumentIdLazyImport = createFileRoute(
+  '/_authenticated/edit/$documentId',
+)()
 
 // Create/Update Routes
 
@@ -259,6 +262,17 @@ const AuthenticatedSettingsAccountLazyRoute =
     ),
   )
 
+const AuthenticatedEditDocumentIdLazyRoute =
+  AuthenticatedEditDocumentIdLazyImport.update({
+    id: '/edit/$documentId',
+    path: '/edit/$documentId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/edit/$documentId.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -361,6 +375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_authenticated/edit/$documentId': {
+      id: '/_authenticated/edit/$documentId'
+      path: '/edit/$documentId'
+      fullPath: '/edit/$documentId'
+      preLoaderRoute: typeof AuthenticatedEditDocumentIdLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
     '/_authenticated/settings/account': {
       id: '/_authenticated/settings/account'
       path: '/account'
@@ -458,6 +479,7 @@ const AuthenticatedSettingsRouteLazyRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRouteLazyRoute: typeof AuthenticatedSettingsRouteLazyRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedEditDocumentIdLazyRoute: typeof AuthenticatedEditDocumentIdLazyRoute
   AuthenticatedDocumentsIndexLazyRoute: typeof AuthenticatedDocumentsIndexLazyRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
   AuthenticatedUploadIndexLazyRoute: typeof AuthenticatedUploadIndexLazyRoute
@@ -468,6 +490,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRouteLazyRoute:
     AuthenticatedSettingsRouteLazyRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedEditDocumentIdLazyRoute: AuthenticatedEditDocumentIdLazyRoute,
   AuthenticatedDocumentsIndexLazyRoute: AuthenticatedDocumentsIndexLazyRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
   AuthenticatedUploadIndexLazyRoute: AuthenticatedUploadIndexLazyRoute,
@@ -491,6 +514,7 @@ export interface FileRoutesByFullPath {
   '/404': typeof errors404LazyRoute
   '/503': typeof errors503LazyRoute
   '/': typeof AuthenticatedIndexRoute
+  '/edit/$documentId': typeof AuthenticatedEditDocumentIdLazyRoute
   '/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
@@ -514,6 +538,7 @@ export interface FileRoutesByTo {
   '/404': typeof errors404LazyRoute
   '/503': typeof errors503LazyRoute
   '/': typeof AuthenticatedIndexRoute
+  '/edit/$documentId': typeof AuthenticatedEditDocumentIdLazyRoute
   '/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
@@ -541,6 +566,7 @@ export interface FileRoutesById {
   '/(errors)/500': typeof errors500LazyRoute
   '/(errors)/503': typeof errors503LazyRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/edit/$documentId': typeof AuthenticatedEditDocumentIdLazyRoute
   '/_authenticated/settings/account': typeof AuthenticatedSettingsAccountLazyRoute
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
@@ -568,6 +594,7 @@ export interface FileRouteTypes {
     | '/404'
     | '/503'
     | '/'
+    | '/edit/$documentId'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
@@ -590,6 +617,7 @@ export interface FileRouteTypes {
     | '/404'
     | '/503'
     | '/'
+    | '/edit/$documentId'
     | '/settings/account'
     | '/settings/appearance'
     | '/settings/display'
@@ -615,6 +643,7 @@ export interface FileRouteTypes {
     | '/(errors)/500'
     | '/(errors)/503'
     | '/_authenticated/'
+    | '/_authenticated/edit/$documentId'
     | '/_authenticated/settings/account'
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
@@ -686,6 +715,7 @@ export const routeTree = rootRoute
       "children": [
         "/_authenticated/settings",
         "/_authenticated/",
+        "/_authenticated/edit/$documentId",
         "/_authenticated/documents/",
         "/_authenticated/help-center/",
         "/_authenticated/upload/",
@@ -738,6 +768,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/": {
       "filePath": "_authenticated/index.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/edit/$documentId": {
+      "filePath": "_authenticated/edit/$documentId.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/settings/account": {

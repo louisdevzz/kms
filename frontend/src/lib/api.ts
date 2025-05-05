@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
+import { fr } from '@faker-js/faker'
 
 const getBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL || 'https://kms-production-958c.up.railway.app'
@@ -75,7 +76,7 @@ export const uploadDocument = async (formData: FormData, self: boolean = true) =
  */
 export const fetchDocuments = async (self: boolean = true) => {
   try {
-    const response = await api.get(`/document/ids?self=${self}`)
+    const response = await api.get(`/document/ids_by_uid?self=${self}`)
     return response.data
   } catch (error) {
     console.error('Error fetching documents:', error)
@@ -142,6 +143,78 @@ export const removeDocument = async (documentId: string, self: boolean = true) =
     console.error('Error removing document:', error)
     if (axios.isAxiosError(error) && error.response) {
       throw new Error(error.response.data.detail || 'Failed to remove document')
+    }
+    throw error
+  }
+}
+
+/**
+ * Search documents by name
+ * @param name - The name to search for
+ * @returns Array of documents matching the search criteria
+ */
+export const searchDocuments = async (name: string) => {
+  try {
+    const response = await api.get(`/document/search?name=${encodeURIComponent(name)}`)
+    return response.data
+  } catch (error) {
+    console.error('Error searching documents:', error)
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.detail || 'Failed to search documents')
+    }
+    throw error
+  }
+}
+
+/**
+ * Update a document on the server
+ * @param documentId - The ID of the document to update
+ * @param formData - FormData object containing updated document and metadata
+ * @param self - Whether to update only personal document (default: true)
+ * @returns The response data from the server
+ */
+export const updateDocument = async (documentId: string, formData: FormData, self: boolean = true) => {
+  try {
+    const response = await api.put(`/document/${documentId}?self=${self}`, formData)
+    return response.data
+  } catch (error) {
+    console.error('Error updating document:', error)
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.detail || 'Failed to update document')
+    }
+    throw error
+  }
+}
+
+/**
+ * Share a document with a user
+ * @param documentId - The ID of the document to share
+ * @param email - The email of the user to share the document with
+ * @param permission - The permission to share the document with
+ * @returns The response data from the server
+ */
+export const shareDocument = async (documentId: string, email: string, permission: string) => {
+  try {
+    const shareApi = axios.create({
+      baseURL: `${baseUrl}/kms/`,
+      headers: {
+        'Authorization': `Bearer ${useAuthStore.getState().auth.accessToken}`,
+        'Accept': 'application/json',
+      },
+    })
+
+    const formData = new FormData()
+    formData.append('document_id', documentId)
+    formData.append('shared_to', email)
+    formData.append('permissions', permission)
+    
+
+    const response = await shareApi.post(`/document/permission`, formData)
+    return response.data
+  } catch (error) {
+    console.error('Error sharing document:', error)
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.detail || 'Failed to share document')
     }
     throw error
   }
